@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'animals',
     'chatting',
     'vets_authorization',
+    'veterinarian_information'
 ]
 
 MIDDLEWARE = [
