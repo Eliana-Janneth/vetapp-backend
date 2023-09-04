@@ -45,8 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'animals',
     'chatting',
+    'medical_history'
+    'veterinarian_information',
     'vets_authorization',
-    'veterinarian_information'
 ]
 
 MIDDLEWARE = [
