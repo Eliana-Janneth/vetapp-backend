@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'animals',
     'chatting',
     'medical_history'
+    'users'
     'veterinarian_information',
     'vets_authorization',
 ]
