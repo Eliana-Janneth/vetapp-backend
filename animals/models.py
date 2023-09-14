@@ -1,13 +1,48 @@
 from django.db import models
+from users.models import Farmer
 
-# Create your models here.
+class Animal_Species(models.Model):
+    id = models.AutoField(primary_key=True) 
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return f"{self.name}"
+    
+    class Meta:
+        verbose_name = 'Especie de animal'
+        verbose_name_plural = 'Especies de animales'
+
+class Animal_Race(models.Model):
+    id = models.AutoField(primary_key=True) 
+    specie = models.ForeignKey(Animal_Species, on_delete=models.CASCADE)
+    name = models.CharField(max_length=45)
+
+    def __str__(self):
+        return f"{self.name - self.specie}"
+    
+    class Meta:
+        verbose_name = 'Raza de animal'
+        verbose_name_plural = 'Razas de animales'    
 
 class Animals(models.Model):
     id = models.AutoField(primary_key=True) 
-    name = models.CharField(max_length=100)
-    species = models.CharField(max_length=100)
-    race = models.CharField(max_length=100)
-    color = models.CharField(max_length=100)
+    farmer = models.ForeignKey(Farmer,on_delete=models.CASCADE)
+    name = models.CharField(max_length=45)
+    specie = models.ForeignKey(Animal_Species, on_delete=models.CASCADE)
+    race = models.ForeignKey(Animal_Race, on_delete=models.CASCADE)
+    color = models.CharField(max_length=200)
     birth_date = models.DateField()
-    gender = models.CharField(max_length=100) 
-    owner = models.CharField(max_length=100) # TODO: change to foreign key
+    gender = models.CharField(max_length=10) 
+    weight = models.FloatField()
+    height = models.FloatField()
+    description = models.CharField(max_length=1000)
+    create_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.specie} - {self.name}"
+    
+    class Meta:
+        verbose_name = 'Animal'
+        verbose_name_plural = 'Animales'
+

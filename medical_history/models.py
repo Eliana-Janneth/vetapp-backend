@@ -1,11 +1,20 @@
 from django.db import models
+from animals.models import Animals
+from users.models import Veterinarian
 
 # Create your models here.
 class Veterinary_Consultations(models.Model):
     id = models.AutoField(primary_key=True)
-    veterinarian = models.CharField(max_length=100) #TODO: change to foreign key
-    animal = models.CharField(max_length=100) #TODO: change to foreign key
-    date = models.DateField()
-    diagnostic = models.CharField(max_length=1000)
-    treatment = models.CharField(max_length=1000)
+    veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE) #TODO: change to foreign key
+    animal = models.ForeignKey(Animals, on_delete=models.CASCADE) #TODO: change to foreign key
+    create_date = models.DateField(auto_now_add=True)
+    diagnostic = models.CharField(max_length=2048)
+    treatment = models.CharField(max_length=2048)
+
+    def __str__(self):
+        return f"{self.veterinarian} - {self.create_date}"
+    
+    class Meta:
+        verbose_name = 'Consulta veterinaria'
+        verbose_name_plural = 'Consultas veterinarias'
     
