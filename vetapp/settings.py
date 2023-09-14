@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'animals',
     'chatting',
-    'medical_history'
-    'users'
+    'medical_history',
+    'users',
     'veterinarian_information',
     'vets_authorization',
 ]
