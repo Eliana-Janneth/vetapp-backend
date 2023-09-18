@@ -11,6 +11,7 @@ class User(AbstractUser):
     id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=40)
     last_name = models.CharField(max_length=40)
+    document_number = models.CharField(max_length=20, unique=True) 
     email = models.EmailField(unique = True)
     password = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=15)
@@ -21,7 +22,6 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            #self.role = self.base_role
             return super().save(*args, **kwargs)
 
     class Meta:
@@ -33,7 +33,7 @@ class Farmer(User):
     ubication = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.first_name} - {self.last_name}"
+        return f"{self.first_name} {self.last_name}"
     class Meta:
         verbose_name = 'Granjero'
         verbose_name_plural = 'Granjeros'
@@ -44,7 +44,7 @@ class Veterinarian(User):
     role = Role.VETERINARIAN
 
     def __str__(self):
-        return f"{self.first_name} - {self.last_name}"
+        return f"{self.first_name} {self.last_name}"
 
     class Meta:
         verbose_name = 'Veterinario'
