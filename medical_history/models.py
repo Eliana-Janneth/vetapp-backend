@@ -2,11 +2,10 @@ from django.db import models
 from animals.models import Animals
 from users.models import Veterinarian
 
-# Create your models here.
 class Veterinary_Consultations(models.Model):
     id = models.AutoField(primary_key=True)
-    veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE) #TODO: change to foreign key
-    animal = models.ForeignKey(Animals, on_delete=models.CASCADE) #TODO: change to foreign key
+    veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE) 
+    animal = models.ForeignKey(Animals, on_delete=models.CASCADE)
     create_date = models.DateField(auto_now_add=True)
     diagnostic = models.CharField(max_length=2048)
     treatment = models.CharField(max_length=2048)

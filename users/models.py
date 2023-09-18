@@ -29,8 +29,8 @@ class Farmer(User):
     def __str__(self):
         return f"{self.first_name} - {self.last_name}"
     class Meta:
-        verbose_name = 'Farmer'
-        verbose_name_plural = 'Farmers'
+        verbose_name = 'Granjero'
+        verbose_name_plural = 'Granjeros'
 
 class Veterinarian(User):
     licence_number = models.CharField(max_length=20)

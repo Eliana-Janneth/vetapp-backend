@@ -1,9 +1,9 @@
 from django.db import models
+from users.models import Veterinarian
 
-# Create your models here.
 class Academic_Information(models.Model):
     id = models.AutoField(primary_key=True)
-    veterinarian = models.CharField(max_length=100) #TODO: change to foreign key
+    veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE)
     title = models.CharField(max_length=256)
     university = models.CharField(max_length=100)
     year = models.IntegerField()
@@ -23,7 +23,7 @@ class Academic_Information(models.Model):
 
 class Work_Experience(models.Model):
     id = models.AutoField(primary_key=True)
-    veterinarian = models.CharField(max_length=100) #TODO: change to foreign key
+    veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE)
     title = models.CharField(max_length=256)
     company = models.CharField(max_length=100)
     functions = models.CharField(max_length=256)

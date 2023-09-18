@@ -1,7 +1,6 @@
 from django.db import models
 from animals.models import Animals
 from users.models import Veterinarian
-# Create your models here.
 
 class Authorization(models.Model):
     id = models.AutoField(primary_key=True)
