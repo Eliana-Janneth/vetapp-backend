@@ -17,6 +17,11 @@ class User(AbstractBaseUser):
     address = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
     role = Role.NONE
+
+    
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+    
     class Meta:
         abstract = True
         verbose_name = 'Usuario'
