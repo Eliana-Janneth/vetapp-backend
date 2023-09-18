@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class Role(models.TextChoices):
@@ -7,23 +7,24 @@ class Role(models.TextChoices):
     VETERINARIAN = "VETERINARIAN", 'Veterinarian'
     NONE = "NONE", 'None'
 
-class User(AbstractBaseUser):
+class User(AbstractUser):
     id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=40)
     last_name = models.CharField(max_length=40)
     email = models.EmailField(unique = True)
-    password = models.CharField(max_length=30)
+    password = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=15)
     address = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
     role = Role.NONE
+    
 
-    
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
-    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            #self.role = self.base_role
+            return super().save(*args, **kwargs)
+
     class Meta:
-        abstract = True
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
 

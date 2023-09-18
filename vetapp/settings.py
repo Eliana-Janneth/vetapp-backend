@@ -33,10 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'users.User'
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,6 +48,7 @@ INSTALLED_APPS = [
     'users',
     'veterinarian_information',
     'vets_authorization',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -120,6 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
+AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'es-es'
 
