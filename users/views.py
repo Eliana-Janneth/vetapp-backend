@@ -34,10 +34,10 @@ class FarmerDetail(APIView):
         pass
 
 
-class FarmerList(APIView):
+class VeterinarianList(APIView):
 
     def get(self, request):
-        farmers_list = Farmer.objects.all()
+        farmers_list = Veterinarian.objects.all()
         serializer = VeterinarianSerializer(farmers_list, many=True)
         return Response(serializer.data)
 
