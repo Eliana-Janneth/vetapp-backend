@@ -18,7 +18,7 @@ class Animal_Race(models.Model):
     name = models.CharField(max_length=45)
 
     def __str__(self):
-        return f"{self.name - self.specie}"
+        return f"{self.name} - {self.specie}"
     
     class Meta:
         verbose_name = 'Raza de animal'
