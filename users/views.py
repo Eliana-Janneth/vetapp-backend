@@ -1,3 +1,4 @@
+from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,10 +23,15 @@ class FarmerList(APIView):
 class FarmerDetail(APIView):
 
     def get_object(self, id):
-        pass
+        try:
+            return Farmer.objects.get(id=id)
+        except Farmer.DoesNotExist:
+            raise Http404
 
     def get(self, request, id):
-        pass
+        farmer = self.get_object(id)
+        serializer = FarmerSerializer(farmer)
+        return Response(serializer.data)
 
     def put(self, request, id):
         pass
@@ -51,10 +57,15 @@ class VeterinarianList(APIView):
 class VeterinarianDetail(APIView):
 
     def get_object(self, id):
-        pass
+        try:
+            return Veterinarian.objects.get(id=id)
+        except Veterinarian.DoesNotExist:
+            raise Http404
 
     def get(self, request, id):
-        pass
+        veterinarian = self.get_object(id)
+        serializer = VeterinarianSerializer(veterinarian)
+        return Response(serializer.data)
 
     def put(self, request, id):
         pass
