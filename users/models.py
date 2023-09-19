@@ -30,7 +30,6 @@ class User(AbstractUser):
 
 class Farmer(User):
     role = Role.FARMER
-    ubication = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -39,8 +38,8 @@ class Farmer(User):
         verbose_name_plural = 'Granjeros'
 
 class Veterinarian(User):
-    licence_number = models.CharField(max_length=20)
-    license_expiry_date = models.DateField()
+    licence_number = models.CharField(max_length=20, null = True, blank = True)
+    license_expiry_date = models.DateField(null=True, blank=True)
     role = Role.VETERINARIAN
 
     def __str__(self):

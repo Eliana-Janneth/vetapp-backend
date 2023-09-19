@@ -18,7 +18,7 @@ class FarmerSerializer(serializers.ModelSerializer):
 class VeterinarianSerializer(serializers.ModelSerializer):
     class Meta:
         model = Veterinarian
-        exclude = ['is_superuser', 'is_staff', 'is_active',
+        exclude = ['licence_number','license_expiry_date','is_superuser', 'is_staff', 'is_active',
                    'groups', 'user_permissions', 'last_login', 'date_joined']
         extra_kwargs = {'password': {'write_only': True}}
     
