@@ -1,12 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
-class Role(models.TextChoices):
-    FARMER = "FARMER", 'Farmer'
-    VETERINARIAN = "VETERINARIAN", 'Veterinarian'
-    NONE = "NONE", 'None'
-
 class User(AbstractUser):
     id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=40)
@@ -17,8 +11,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=15)
     address = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
-    role = Role.NONE
-    
+    role = models.CharField(max_length=20)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -29,7 +22,6 @@ class User(AbstractUser):
         verbose_name_plural = 'Usuarios'
 
 class Farmer(User):
-    role = Role.FARMER
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -40,7 +32,7 @@ class Farmer(User):
 class Veterinarian(User):
     licence_number = models.CharField(max_length=20, null = True, blank = True)
     license_expiry_date = models.DateField(null=True, blank=True)
-    role = Role.VETERINARIAN
+    
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
