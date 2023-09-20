@@ -2,12 +2,11 @@ from rest_framework import serializers
 from users.models import Farmer, Veterinarian
 from django.contrib.auth.hashers import make_password
 
-"""
-    Granjero
-"""
-
 
 class FarmerSerializer(serializers.ModelSerializer):
+    """
+        Granjero
+    """
     first_name = serializers.CharField(required=True, max_length=40, min_length=2, error_messages={
         'required': 'El nombre es requerido',
         'min_length': 'El nombre debe tener mínimo 2 caracteres',
@@ -95,12 +94,10 @@ class FarmerSerializer(serializers.ModelSerializer):
         return validated_data
 
 
-"""
-    Veterinario
-"""
-
-
 class VeterinarianSerializer(serializers.ModelSerializer):
+    """
+    Veterinario
+    """
     first_name = serializers.CharField(required=True, max_length=40, min_length=2, error_messages={
         'required': 'El nombre es requerido',
         'min_length': 'El nombre debe tener mínimo 2 caracteres',
