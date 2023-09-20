@@ -5,6 +5,8 @@ from django.contrib.auth.hashers import make_password
 """
     Granjero
 """
+
+
 class FarmerSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True, max_length=40, min_length=2, error_messages={
         'required': 'El nombre es requerido',
@@ -62,6 +64,11 @@ class FarmerSerializer(serializers.ModelSerializer):
         'max_length': 'La ciudad debe tener máximo 50 caracteres',
         'invalid': 'La ciudad no es válida'
     })
+    role = serializers.CharField(required=False, max_length=20, min_length=3, error_messages={
+        'min_length': 'El rol debe tener mínimo 3 caracteres',
+        'max_length': 'El rol debe tener máximo 20 caracteres',
+        'invalid': 'El rol no es válido'
+    })
     repeat_password = serializers.CharField(required=True, max_length=200, min_length=8, write_only=True, error_messages={
         'required': 'La confirmación de contraseña es requerida',
         'min_length': 'La confirmación de contraseña debe tener mínimo 8 caracteres',
@@ -71,7 +78,7 @@ class FarmerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Farmer
-        exclude = ['id', 'role', 'is_superuser', 'is_staff', 'is_active',
+        exclude = ['id', 'is_superuser', 'is_staff', 'is_active',
                    'groups', 'user_permissions', 'last_login', 'date_joined']
         extra_kwargs = {'password': {'write_only': True},
                         'username': {'required': False,
@@ -81,6 +88,7 @@ class FarmerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['username'] = validated_data['email'].split('@')[0]
         validated_data['password'] = make_password(validated_data['password'])
+        validated_data['role'] = 'farmer'
         validated_data.pop('repeat_password')
         return super(FarmerSerializer, self).create(validated_data)
 
@@ -163,6 +171,11 @@ class VeterinarianSerializer(serializers.ModelSerializer):
         'required': 'La fecha de expiración de la licencia es requerida',
         'invalid': 'La fecha de expiración de la licencia no es válida'
     })
+    role = serializers.CharField(required=False, max_length=20, min_length=3, error_messages={
+        'min_length': 'El rol debe tener mínimo 3 caracteres',
+        'max_length': 'El rol debe tener máximo 20 caracteres',
+        'invalid': 'El rol no es válido'
+    })
     repeat_password = serializers.CharField(required=True, max_length=200, min_length=8, write_only=True, error_messages={
         'required': 'La confirmación de contraseña es requerida',
         'min_length': 'La confirmación de contraseña debe tener mínimo 8 caracteres',
@@ -172,13 +185,13 @@ class VeterinarianSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Veterinarian
-        exclude = ['id', 'role', 'licence_number', 'license_expiry_date', 'is_superuser', 'is_staff', 'is_active',
+        exclude = ['id', 'licence_number', 'license_expiry_date', 'is_superuser', 'is_staff', 'is_active',
                    'groups', 'user_permissions', 'last_login', 'date_joined']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         validated_data['username'] = validated_data['email'].split('@')[0]
         validated_data['password'] = make_password(validated_data['password'])
+        validated_data['role'] = 'veterinarian'
         validated_data.pop('repeat_password')
-
         return super(VeterinarianSerializer, self).create(validated_data)
