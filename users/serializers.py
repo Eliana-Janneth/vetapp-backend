@@ -24,8 +24,7 @@ class FarmerSerializer(serializers.ModelSerializer):
             'invalid': 'El número de documento no es válido'
         })
     username = serializers.CharField(
-        required=True, max_length=50, min_length=4, error_messages={
-            'required': 'El nombre de usuario es requerido',
+        required=False, max_length=50, min_length=4, error_messages={
             'min_length': 'El nombre de usuario debe tener mínimo 4 caracteres',
             'max_length': 'El nombre de usuario debe tener máximo 50 caracteres',
             'invalid': 'El nombre de usuario no es válido'
@@ -61,16 +60,33 @@ class FarmerSerializer(serializers.ModelSerializer):
         'max_length': 'La ciudad debe tener máximo 50 caracteres',
         'invalid': 'La ciudad no es válida'
     })
-    
+    repeat_password = serializers.CharField(required=True, max_length=200, min_length=8, write_only=True, error_messages={
+        'required': 'La confirmación de contraseña es requerida',
+        'min_length': 'La confirmación de contraseña debe tener mínimo 8 caracteres',
+        'max_length': 'La confirmación de contraseña debe tener máximo 40 caracteres',
+        'invalid': 'La confirmación de contraseña no es válida'
+    })
+
     class Meta:
         model = Farmer
         exclude = ['id', 'is_superuser', 'is_staff', 'is_active',
                    'groups', 'user_permissions', 'last_login', 'date_joined']
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True},
+                        'username': {'required': False,
+                                     'write_only': True},
+                        }
 
     def create(self, validated_data):
+        validated_data['username'] = validated_data['email'].split('@')[0]
         validated_data['password'] = make_password(validated_data['password'])
+        validated_data.pop('repeat_password')
         return super(FarmerSerializer, self).create(validated_data)
+
+    def validate(self, validated_data):
+        if validated_data['password'] != validated_data['repeat_password']:
+            raise serializers.ValidationError(
+                {'response': 'Las contraseñas no coinciden'})
+        return validated_data
 
 
 class VeterinarianSerializer(serializers.ModelSerializer):
