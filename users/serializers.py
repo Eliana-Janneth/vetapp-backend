@@ -4,6 +4,12 @@ from django.contrib.auth.hashers import make_password
 
 
 class FarmerSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=True, max_length=50, min_length=4)
+    email = serializers.EmailField(required=True)
+    document_number = serializers.CharField(required=True)
+    phone_number = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+
     class Meta:
         model = Farmer
         exclude = ['id', 'is_superuser', 'is_staff', 'is_active',

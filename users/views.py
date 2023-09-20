@@ -2,12 +2,15 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import serializers
 from users.models import Farmer, Veterinarian
 from users.serializers import FarmerSerializer, VeterinarianSerializer
 
-# Create your views here.
-class FarmerList(APIView):
+# TODO: Quitar username, generarlo de forma automática con el correo
+# TODO: Validaciones de los campos, correo válido y que los campo cumplan 
+# con tipo de dato. Confirmar contraseña
 
+class FarmerList(APIView):
     def get(self, request):
         farmers_list = Farmer.objects.all()
         serializer = FarmerSerializer(farmers_list, many=True)
@@ -15,10 +18,28 @@ class FarmerList(APIView):
 
     def post(self, request):
         serializer = FarmerSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.check_farmer_exists(serializer.validated_data)
+        self.create_farmer(serializer)
+        return Response({'message': 'Te has registrado existosamente'}, status=status.HTTP_201_CREATED)
+        
+    def create_farmer(self, farmer_serializer):
+        try:
+            farmer_serializer.save()
+        except:
+            raise serializers.ValidationError({'response':'Ha ocurrido un error al registrarte, intentalo nuevamente más tarde'})
+            
+    def check_farmer_exists(self, validated_data):
+        username = validated_data['username']
+        email = validated_data['email']
+        document_number = validated_data['document_number']
+        if Farmer.objects.filter(username=username).exists() or Farmer.objects.filter(email=email).exists():
+            raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este correo'})
+        print(Farmer.objects.filter(document_number=document_number).exists())
+        if Farmer.objects.filter(document_number=document_number):
+            raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este número de documento'})   
+    
+    
 
 class FarmerDetail(APIView):
 
