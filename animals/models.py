@@ -39,6 +39,9 @@ class Animals(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     
+    def get_absolute_url(self):
+        return self.post.get_absolute_url()
+
     def __str__(self):
         return f"{self.specie} - {self.name}"
     

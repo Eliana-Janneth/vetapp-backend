@@ -1,40 +1,45 @@
-from animals.models import Animals
-from animals.serializers import AnimalSerializer, AnimalSpecieSerializer, AnimalRaceSerializer
-from rest_framework import status
 from rest_framework.views import APIView
-from animals.models import Animals, Animal_Race, Animal_Species
 from rest_framework.response import Response
-
-class AnimalList(APIView):
-    view_name = 'animals-detail'
-    def get(self, request):
-        animals_list = Animals.objects.all()
-        context = {'request': request}
-        serializer = AnimalSerializer(animals_list, many=True, context=context)
-        return Response(serializer.data)
-
-class AnimalDetail(APIView):
-    pass
+from rest_framework import status
+from .models import Animal_Species, Animal_Race, Animals
+from .serializers import AnimalSpeciesSerializer, AnimalRaceSerializer, AnimalSerializer
 
 class AnimalSpeciesList(APIView):
-    view_name = 'animal_specie-detail'
     def get(self, request):
-        animal_species_list = Animal_Species.objects.all()
-        context = {'request': request}
-        serializer = AnimalSpecieSerializer(animal_species_list, many=True, context=context)
+        animal_species = Animal_Species.objects.all()
+        serializer = AnimalSpeciesSerializer(animal_species, many=True)
         return Response(serializer.data)
 
-class AnimalSpeciesDetail(APIView):
-    pass
+    def post(self, request):
+        serializer = AnimalSpeciesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AnimalRaceList(APIView):
-    view_name = 'animal_race-detail'
     def get(self, request):
-        animal_race_list = Animal_Race.objects.all()
-        context = {'request': request}
-        serializer = AnimalRaceSerializer(animal_race_list, many=True, context=context)
+        animal_races = Animal_Race.objects.all()
+        serializer = AnimalRaceSerializer(animal_races, many=True)
         return Response(serializer.data)
-        
 
-class AnimalRaceDetail(APIView):
-    pass
+    def post(self, request):
+        serializer = AnimalRaceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AnimalList(APIView):
+    def get(self, request):
+        animals = Animals.objects.all()
+        serializer = AnimalSerializer(animals, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = AnimalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
