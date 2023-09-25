@@ -7,4 +7,6 @@ urlpatterns = format_suffix_patterns([
     path('farmers/<int:id>/', views.FarmerDetail.as_view(), name='farmer-detail'),
     path('vets/', views.VeterinarianList.as_view()),
     path('vets/<int:id>/', views.VeterinarianDetail.as_view(), name='veterinarian-detail'),
+    path('auth/login/', views.UserLogin.as_view(), name='auth_login'),
+    path('auth/logout/', views.UserLogout.as_view(), name='auth_logout'),
 ])

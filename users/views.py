@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework import serializers
 from users.models import Farmer, Veterinarian
 from users.serializers import FarmerSerializer, VeterinarianSerializer
+from django.contrib.auth import authenticate, login, logout
 
 class FarmerList(APIView):
     def get(self, request):
@@ -32,7 +33,6 @@ class FarmerList(APIView):
             raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este correo'})
         if Farmer.objects.filter(document_number=document_number):
             raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este número de documento'})   
-    
 
 class FarmerDetail(APIView):
 
@@ -52,7 +52,6 @@ class FarmerDetail(APIView):
 
     def delete(self, request, id):
         pass
-
 
 class VeterinarianList(APIView):
 
@@ -106,3 +105,18 @@ class VeterinarianDetail(APIView):
 
     def delete(self, request, id):
         pass
+
+class UserLogin(APIView):
+    def post(self, request):
+        email = request.data['email']
+        password = request.data['password']
+        user = authenticate(email=email, password=password)
+        if user:
+            login(request, user)
+            return Response({'response': 'Te has logueado existosamente'}, status=status.HTTP_200_OK)
+        return Response({'response': 'Credenciales inválidas'}, status=status.HTTP_400_BAD_REQUEST) 
+
+class UserLogout(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({'response': 'Te has deslogueado existosamente'}, status=status.HTTP_200_OK)

@@ -13,6 +13,9 @@ class User(AbstractUser):
     city = models.CharField(max_length=50)
     role = models.CharField(max_length=20)
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'password']
+    
     def save(self, *args, **kwargs):
         if not self.pk:
             return super().save(*args, **kwargs)
