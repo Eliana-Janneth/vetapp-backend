@@ -1,8 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Animal_Species, Animal_Race, Animals
-from .serializers import AnimalSpeciesSerializer, AnimalRaceSerializer, AnimalSerializer
+from animals.models import Animal_Species, Animal_Race, Animals
+from animals.serializers import AnimalSpeciesSerializer, AnimalRaceSerializer, AnimalSerializer
+from users.models import Farmer
+from users.serializers import FarmerSerializer
 
 class AnimalSpeciesList(APIView):
     def get(self, request):
@@ -43,3 +45,31 @@ class AnimalList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+class AnimalDetail(APIView):
+    def get(self, request, pk):
+        try:
+            animal = Animals.objects.get(pk=pk)
+        except Animals.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        animal_serializer = AnimalSerializer(animal)
+        race_serializer = AnimalRaceSerializer(animal.race)
+        species_serializer = AnimalSpeciesSerializer(animal.specie)
+        
+        try:
+            farmer = Farmer.objects.get(id=animal.farmer.id)
+        except Farmer.DoesNotExist:
+            farmer = None  # En caso de que no haya un granjero asociado
+        
+        # Serializa la información del granjero
+        farmer_serializer = FarmerSerializer(farmer)  
+
+        data = {
+            'animal': animal_serializer.data,
+            'race': race_serializer.data,
+            'species': species_serializer.data,
+            'farmer': farmer_serializer.data 
+        }
+        
+        return Response(data)

@@ -6,6 +6,7 @@ from rest_framework import serializers
 from users.models import Farmer, Veterinarian
 from users.serializers import FarmerSerializer, VeterinarianSerializer
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.authtoken.models import Token
 
 class FarmerList(APIView):
     def get(self, request):
@@ -106,17 +107,3 @@ class VeterinarianDetail(APIView):
     def delete(self, request, id):
         pass
 
-class UserLogin(APIView):
-    def post(self, request):
-        email = request.data['email']
-        password = request.data['password']
-        user = authenticate(email=email, password=password)
-        if user:
-            login(request, user)
-            return Response({'response': 'Te has logueado existosamente'}, status=status.HTTP_200_OK)
-        return Response({'response': 'Credenciales inválidas'}, status=status.HTTP_400_BAD_REQUEST) 
-
-class UserLogout(APIView):
-    def post(self, request):
-        logout(request)
-        return Response({'response': 'Te has deslogueado existosamente'}, status=status.HTTP_200_OK)
