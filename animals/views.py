@@ -5,8 +5,11 @@ from animals.models import Animal_Species, Animal_Race, Animals
 from animals.serializers import AnimalSpeciesSerializer, AnimalRaceSerializer, AnimalSerializer
 from users.models import Farmer
 from users.serializers import FarmerSerializer
+from rest_framework.permissions import IsAuthenticated
+from knox.auth import TokenAuthentication
 
 class AnimalSpeciesList(APIView):
+    
     def get(self, request):
         animal_species = Animal_Species.objects.all()
         serializer = AnimalSpeciesSerializer(animal_species, many=True)
@@ -33,6 +36,8 @@ class AnimalRaceList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AnimalList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     def get(self, request):
         animals = Animals.objects.all()
         serializer = AnimalSerializer(animals, many=True)

@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django import urls
 from django.contrib import admin
 from django.urls import path, include
 
@@ -22,5 +23,5 @@ urlpatterns = [
     path('', include('animals.urls')),
     path('', include('users.urls')),
     path('', include('authentication.urls')),
-    path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('api/auth/',include('knox.urls')),
 ]

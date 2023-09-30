@@ -3,12 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import serializers
-from users.models import Farmer, Veterinarian
+from users.models import Farmer, Veterinarian, User
 from users.serializers import FarmerSerializer, VeterinarianSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.authtoken.models import Token
 
+
 class FarmerList(APIView):
+    
     def get(self, request):
         farmers_list = Farmer.objects.all()
         serializer = FarmerSerializer(farmers_list, many=True)
@@ -30,9 +32,9 @@ class FarmerList(APIView):
     def check_farmer_exists(self, validated_data):
         email = validated_data['email']
         document_number = validated_data['document_number']
-        if Farmer.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este correo'})
-        if Farmer.objects.filter(document_number=document_number):
+        if User.objects.filter(document_number=document_number):
             raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este número de documento'})   
 
 class FarmerDetail(APIView):
@@ -84,9 +86,9 @@ class VeterinarianList(APIView):
     def check_veterinarian_exists(self, validated_data):
         email = validated_data['email']
         document_number = validated_data['document_number']
-        if Veterinarian.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este correo'})
-        if Veterinarian.objects.filter(document_number=document_number):
+        if User.objects.filter(document_number=document_number):
             raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este número de documento'})   
     
 class VeterinarianDetail(APIView):
