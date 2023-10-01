@@ -6,7 +6,8 @@ from rest_framework import serializers
 from users.models import Farmer, Veterinarian, User
 from users.serializers import FarmerSerializer, VeterinarianSerializer
 from django.contrib.auth import authenticate, login, logout
-from rest_framework.authtoken.models import Token
+from knox.models import AuthToken
+from knox.settings import CONSTANTS
 
 
 class FarmerList(APIView):
@@ -39,14 +40,17 @@ class FarmerList(APIView):
 
 class FarmerDetail(APIView):
 
-    def get_object(self, id):
-        try:
-            return Farmer.objects.get(id=id)
-        except Farmer.DoesNotExist:
-            raise Http404
+    def get_object(self, token):
+        user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
+        if not user:
+            return None
+        return user.user
 
-    def get(self, request, id):
-        farmer = self.get_object(id)
+    def get(self, request):
+        token  = request.headers['Authorization']
+        farmer = self.get_object(token)
+        if not farmer:
+            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = FarmerSerializer(farmer)
         return Response(serializer.data)
 
@@ -62,13 +66,6 @@ class VeterinarianList(APIView):
         veterinarians_list = Veterinarian.objects.all()
         serializer = VeterinarianSerializer(veterinarians_list, many=True)
         return Response(serializer.data)
-
-    def post(self, request):
-        serializer = VeterinarianSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
     
     def post(self, request):
         serializer = VeterinarianSerializer(data=request.data)
@@ -109,3 +106,19 @@ class VeterinarianDetail(APIView):
     def delete(self, request, id):
         pass
 
+
+class UserDetail(APIView):
+
+    def get_object(self, token):
+        user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
+        if not user:
+            return None
+        return user.user
+
+    def get(self, request):
+        token  = request.headers['Authorization']
+        user = self.get_object(token)
+        if not user:
+            return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = FarmerSerializer(user)
+        return Response(serializer.data)
