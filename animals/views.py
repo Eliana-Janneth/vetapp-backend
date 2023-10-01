@@ -61,8 +61,8 @@ class AnimalList(APIView):
             return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
         print(farmer.id)
         animals = Animals.objects.filter(farmer=farmer.id)
-        serializer = AnimalSerializer(animals, many=True)
-        return Response(serializer.data)
+        animal_serializer = AnimalSerializer(animals, many=True)
+        return Response(animal_serializer.data)
 
     def post(self, request):
         serializer = AnimalSerializer(data=request.data)
