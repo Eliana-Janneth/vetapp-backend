@@ -7,8 +7,13 @@ from users.models import Farmer
 from users.serializers import FarmerSerializer
 from rest_framework.permissions import IsAuthenticated
 from knox.auth import TokenAuthentication
+from knox.models import AuthToken
+from knox.settings import CONSTANTS
+
 
 class AnimalSpeciesList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
     def get(self, request):
         animal_species = Animal_Species.objects.all()
@@ -23,6 +28,8 @@ class AnimalSpeciesList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AnimalRaceList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     def get(self, request):
         animal_races = Animal_Race.objects.all()
         serializer = AnimalRaceSerializer(animal_races, many=True)
@@ -38,8 +45,22 @@ class AnimalRaceList(APIView):
 class AnimalList(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
+    
+    def get_object(self, token):
+        user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
+        if not user or not user.user.role == 'farmer':
+            return None
+        return user.user
+
     def get(self, request):
-        animals = Animals.objects.all()
+        if not request.headers['Authorization']:
+            return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
+        token  = request.headers['Authorization'][6:]
+        farmer = self.get_object(token)
+        if not farmer:
+            return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
+        print(farmer.id)
+        animals = Animals.objects.filter(farmer=farmer.id)
         serializer = AnimalSerializer(animals, many=True)
         return Response(serializer.data)
 
