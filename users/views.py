@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework import serializers
 from users.models import Farmer, Veterinarian, User
 from users.serializers import FarmerSerializer, VeterinarianSerializer
-from django.contrib.auth import authenticate, login, logout
+from rest_framework.permissions import IsAuthenticated
+from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from knox.settings import CONSTANTS
 
@@ -47,7 +48,7 @@ class FarmerDetail(APIView):
         return user.user
 
     def get(self, request):
-        token  = request.headers['Authorization']
+        token  = request.headers['Authorization'][6:]
         farmer = self.get_object(token)
         if not farmer:
             return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
@@ -61,6 +62,8 @@ class FarmerDetail(APIView):
         pass
 
 class VeterinarianList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         veterinarians_list = Veterinarian.objects.all()
@@ -108,7 +111,9 @@ class VeterinarianDetail(APIView):
 
 
 class UserDetail(APIView):
-
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
     def get_object(self, token):
         user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
         if not user:
@@ -116,7 +121,7 @@ class UserDetail(APIView):
         return user.user
 
     def get(self, request):
-        token  = request.headers['Authorization']
+        token  = request.headers['Authorization'][6:]
         user = self.get_object(token)
         if not user:
             return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
