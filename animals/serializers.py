@@ -10,24 +10,40 @@ class AnimalSpeciesSerializer(serializers.ModelSerializer):
 class AnimalRaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal_Race
+        
         fields = '__all__'
 
 class AnimalSerializer(serializers.ModelSerializer):
-    specie = serializers.CharField(source='specie.name')
-    race = serializers.CharField(source='race.name')
-        #     "id": 1,
-        # "specie": "Vaca",
-        # "race": "Aberdeen Angus",
-        # "name": "Lola",
-        # "color": "Blanca",
-        # "birth_date": "2023-05-27",
-        # "gender": "Female",
-        # "weight": "120",
-        # "height": "1.5",
-        # "description": "Tiene cola y hace muuu",
-        # "create_time": "2023-09-18T15:16:48.503273-05:00",
-        # "update_time": "2023-10-01T15:23:25.602126-05:00",
-        # "farmer": 41
+    specie = serializers.PrimaryKeyRelatedField(queryset=Animal_Species.objects.all(), write_only=True)
+    race = serializers.PrimaryKeyRelatedField(queryset=Animal_Race.objects.all(), write_only=True)
+    specie_name = serializers.SerializerMethodField()
+    race_name = serializers.SerializerMethodField()
+    name=serializers.CharField(max_length=50)
+    color=serializers.CharField(max_length=50)
+    birth_date=serializers.DateField()
+    gender=serializers.CharField(max_length=50)
+    weight=serializers.CharField()
+    height=serializers.CharField()
+    description=serializers.CharField(max_length=50)
+
     class Meta:
         model = Animals
-        fields = '__all__'
+        exclude =["create_time","update_time"]
+    
+    def get_specie_name(self, obj):
+        return obj.specie.name if obj.specie else None
+
+    def get_race_name(self, obj):
+        return obj.race.name if obj.race else None
+
+    def validate(self, validated_data):
+        specie_id = validated_data['specie'].id
+        race_id = validated_data['race'].id
+        try:
+            race = Animal_Race.objects.get(id=race_id)
+            if race.specie_id != specie_id:
+                raise serializers.ValidationError({'response': 'La raza no pertenece a la especie'})
+        except Animal_Race.DoesNotExist:
+            raise serializers.ValidationError({'response': 'La raza especificada no existe'})
+        return validated_data
+    
