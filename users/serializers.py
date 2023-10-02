@@ -180,11 +180,9 @@ class VeterinarianSerializer(serializers.ModelSerializer):
         model = Veterinarian
         exclude = ['id', 'is_superuser', 'is_staff', 'is_active',
                    'groups', 'user_permissions', 'last_login', 'date_joined']
-        extra_kwargs = {'password': {'write_only': True},
-                        'username': {'required': False,
-                                     'write_only': True}, }
 
     def create(self, validated_data):
+        validated_data['username'] = validated_data['email'].split('@')[0]
         validated_data['password'] = make_password(validated_data['password'])
         validated_data['role'] = 'veterinarian'
         validated_data.pop('repeat_password')

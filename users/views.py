@@ -10,6 +10,19 @@ from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from knox.settings import CONSTANTS
 
+def check_users_exists(validated_data):
+    email = validated_data['email']
+    document_number = validated_data['document_number']
+    if User.objects.filter(email=email).exists():
+        raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este correo'})
+    if User.objects.filter(document_number=document_number):
+        raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este número de documento'})   
+
+def get_user_from_token(token):
+        user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
+        if not user:
+            return None
+        return user.user
 
 class FarmerList(APIView):
     
@@ -21,7 +34,7 @@ class FarmerList(APIView):
     def post(self, request):
         serializer = FarmerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.check_farmer_exists(serializer.validated_data)
+        check_users_exists(serializer.validated_data)
         self.create_farmer(serializer)
         return Response({'response': 'Te has registrado existosamente'}, status=status.HTTP_201_CREATED)
         
@@ -49,7 +62,7 @@ class FarmerDetail(APIView):
 
     def get(self, request):
         token  = request.headers['Authorization'][6:]
-        farmer = self.get_object(token)
+        farmer = get_user_from_token(token)
         if not farmer:
             return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = FarmerSerializer(farmer)
@@ -62,8 +75,6 @@ class FarmerDetail(APIView):
         pass
 
 class VeterinarianList(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         veterinarians_list = Veterinarian.objects.all()
@@ -73,14 +84,18 @@ class VeterinarianList(APIView):
     def post(self, request):
         serializer = VeterinarianSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.check_veterinarian_exists(serializer.validated_data)
+        print("entra1")
+        check_users_exists(serializer.validated_data)
+        print("entra2")
         self.create_veterinarian(serializer)
+        print("entra3")
         return Response({'response': 'Te has registrado existosamente'}, status=status.HTTP_201_CREATED)
         
     def create_veterinarian(self, veterinarian_serializer):
         try:
             veterinarian_serializer.save()
-        except:
+        except Exception as e:
+            print(e)
             raise serializers.ValidationError({'response':'Ha ocurrido un error al registrarte, intentalo nuevamente más tarde'})
             
     def check_veterinarian_exists(self, validated_data):
@@ -122,8 +137,11 @@ class UserDetail(APIView):
 
     def get(self, request):
         token  = request.headers['Authorization'][6:]
-        user = self.get_object(token)
+        user = get_user_from_token(token)
         if not user:
             return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
-        serializer = FarmerSerializer(user)
+        if user.role == 'veterinarian':
+            serializer = VeterinarianSerializer(user)
+        else:
+            serializer = FarmerSerializer(user)
         return Response(serializer.data)
