@@ -23,5 +23,6 @@ urlpatterns = [
     path('', include('animals.urls')),
     path('', include('users.urls')),
     path('', include('authentication.urls')),
+    path('', include('medical_history.urls')),
     path('api/auth/',include('knox.urls')),
 ]
