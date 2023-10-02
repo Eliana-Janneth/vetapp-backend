@@ -84,11 +84,8 @@ class VeterinarianList(APIView):
     def post(self, request):
         serializer = VeterinarianSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print("entra1")
         check_users_exists(serializer.validated_data)
-        print("entra2")
         self.create_veterinarian(serializer)
-        print("entra3")
         return Response({'response': 'Te has registrado existosamente'}, status=status.HTTP_201_CREATED)
         
     def create_veterinarian(self, veterinarian_serializer):
@@ -129,12 +126,6 @@ class UserDetail(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     
-    def get_object(self, token):
-        user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
-        if not user:
-            return None
-        return user.user
-
     def get(self, request):
         token  = request.headers['Authorization'][6:]
         user = get_user_from_token(token)

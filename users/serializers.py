@@ -154,13 +154,13 @@ class VeterinarianSerializer(serializers.ModelSerializer):
         'max_length': 'La ciudad debe tener máximo 50 caracteres',
         'invalid': 'La ciudad no es válida'
     })
-    licence_number = serializers.CharField(required=False, max_length=20, min_length=4, error_messages={
+    license_number = serializers.CharField(required=False, allow_null = True, max_length=20, min_length=4, error_messages={
         'required': 'El número de licencia es requerido',
         'min_length': 'El número de licencia debe tener mínimo 4 caracteres',
         'max_length': 'El número de licencia debe tener máximo 20 caracteres',
         'invalid': 'El número de licencia no es válido'
     })
-    licence_expiry_date = serializers.DateField(required=False, error_messages={
+    license_expiry_date = serializers.DateField(required=False, allow_null = True,error_messages={
         'required': 'La fecha de expiración de la licencia es requerida',
         'invalid': 'La fecha de expiración de la licencia no es válida'
     })

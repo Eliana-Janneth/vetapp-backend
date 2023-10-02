@@ -33,7 +33,7 @@ class Farmer(User):
         verbose_name_plural = 'Granjeros'
 
 class Veterinarian(User):
-    licence_number = models.CharField(max_length=20, null = True, blank = True)
+    license_number = models.CharField(max_length=20, null = True, blank = True)
     license_expiry_date = models.DateField(null=True, blank=True)
     
 
