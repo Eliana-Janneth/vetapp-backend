@@ -17,7 +17,7 @@ class UserLogin(KnoxLoginView):
         data = {
             'expiry': self.format_expiry_datetime(instance.expiry),
             'token': token,
-            'user:':{
+            'user':{
                 'role': request.user.role,
                 'name': request.user.first_name,
             }
