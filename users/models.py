@@ -15,10 +15,6 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'password']
-    
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Usuario'

@@ -79,7 +79,7 @@ class FarmerSerializer(serializers.ModelSerializer):
         model = Farmer
         exclude = ['id', 'is_superuser', 'is_staff', 'is_active',
                    'groups', 'user_permissions', 'last_login', 'date_joined']
-
+"""
     def create(self, validated_data):
         validated_data['username'] = validated_data['email'].split('@')[0]
         validated_data['password'] = make_password(validated_data['password'])
@@ -92,7 +92,7 @@ class FarmerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'response': 'Las contraseñas no coinciden'})
         return validated_data
-
+"""
 
 class VeterinarianSerializer(serializers.ModelSerializer):
     """

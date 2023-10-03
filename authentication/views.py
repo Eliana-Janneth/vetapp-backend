@@ -3,6 +3,14 @@ from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from django.contrib.auth import login
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from knox.auth import TokenAuthentication
+from knox.models import AuthToken
+from knox.settings import CONSTANTS
+
 class UserLogin(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
 
@@ -23,3 +31,10 @@ class UserLogin(KnoxLoginView):
             }
         }
         return data
+    
+class AuthTokenValidation(APIView):
+    def get(self, request):
+        token  = request.headers['Authorization'][6:]
+        AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
+        return Response({'response': 'Usuario autenticado'}, status=status.HTTP_202_ACCEPTED)
+    

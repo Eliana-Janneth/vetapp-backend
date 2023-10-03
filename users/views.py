@@ -24,13 +24,8 @@ def get_user_from_token(token):
             return None
         return user.user
 
-class FarmerList(APIView):
+class FarmerBasic(APIView):
     
-    def get(self, request):
-        farmers_list = Farmer.objects.all()
-        serializer = FarmerSerializer(farmers_list, many=True)
-        return Response(serializer.data)
-
     def post(self, request):
         serializer = FarmerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -43,22 +38,11 @@ class FarmerList(APIView):
             farmer_serializer.save()
         except:
             raise serializers.ValidationError({'response':'Ha ocurrido un error al registrarte, intentalo nuevamente más tarde'})
-            
-    def check_farmer_exists(self, validated_data):
-        email = validated_data['email']
-        document_number = validated_data['document_number']
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este correo'})
-        if User.objects.filter(document_number=document_number):
-            raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este número de documento'})   
 
-class FarmerDetail(APIView):
 
-    def get_object(self, token):
-        user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
-        if not user:
-            return None
-        return user.user
+class FarmerAuthenticated(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         token  = request.headers['Authorization'][6:]
@@ -67,19 +51,43 @@ class FarmerDetail(APIView):
             return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = FarmerSerializer(farmer)
         return Response(serializer.data)
-
-    def put(self, request, id):
-        pass
-
-    def delete(self, request, id):
-        pass
-
-class VeterinarianList(APIView):
-
-    def get(self, request):
-        veterinarians_list = Veterinarian.objects.all()
-        serializer = VeterinarianSerializer(veterinarians_list, many=True)
+    
+    def patch(self, request, *args, **kwargs):
+        token = request.headers['Authorization'][6:]
+        farmer = get_user_from_token(token)
+        if not farmer:
+            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = FarmerSerializer(farmer, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
+"""
+    def patch(self, request, *args, **kwargs):
+        token = request.headers['Authorization'][6:]
+        f = get_user_from_token(token)
+        farmer = Farmer.objects.get(id=f.id)
+        if not farmer:
+            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+        phone_number = request.data.get('phone_number')
+        address = request.data.get('address')
+        city = request.data.get('city')
+        if phone_number:
+            farmer.phone_number = phone_number
+        if address:
+            farmer.address = address
+        if city:
+            farmer.city = city
+        try:
+            farmer.save()
+            print("id del farmer: ", farmer.id)
+        except Exception as e:
+            return Response({'response': 'Error al guardar los cambios en la base de datos'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        farmer = Farmer.objects.get(id=f.id)
+        serializer = FarmerSerializer(farmer)
+        return Response(serializer.data)
+"""
+
+class VeterinarianBasic(APIView):
     
     def post(self, request):
         serializer = VeterinarianSerializer(data=request.data)
@@ -92,35 +100,29 @@ class VeterinarianList(APIView):
         try:
             veterinarian_serializer.save()
         except Exception as e:
-            print(e)
             raise serializers.ValidationError({'response':'Ha ocurrido un error al registrarte, intentalo nuevamente más tarde'})
-            
-    def check_veterinarian_exists(self, validated_data):
-        email = validated_data['email']
-        document_number = validated_data['document_number']
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este correo'})
-        if User.objects.filter(document_number=document_number):
-            raise serializers.ValidationError({'response':'Ya existe un usuario registrado con este número de documento'})   
-    
-class VeterinarianDetail(APIView):
-    def get_object(self, id):
-        try:
-            return Veterinarian.objects.get(id=id)
-        except Veterinarian.DoesNotExist:
-            raise Http404
+   
+class VeterinarianAuthenticated(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
-    def get(self, request, id):
-        veterinarian = self.get_object(id)
+    def get(self, request):
+        token  = request.headers['Authorization'][6:]
+        veterinarian = get_user_from_token(token)
+        if not veterinarian:
+            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = VeterinarianSerializer(veterinarian)
         return Response(serializer.data)
-
-    def put(self, request, id):
-        pass
-
-    def delete(self, request, id):
-        pass
-
+    
+    def patch(self, request, *args, **kwargs):
+        token = request.headers['Authorization'][6:]
+        veterinarian = get_user_from_token(token)
+        if not veterinarian:
+            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = VeterinarianSerializer(veterinarian, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class UserDetail(APIView):
     authentication_classes = (TokenAuthentication,)
@@ -136,3 +138,4 @@ class UserDetail(APIView):
         else:
             serializer = FarmerSerializer(user)
         return Response(serializer.data)
+
