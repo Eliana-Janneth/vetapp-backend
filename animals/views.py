@@ -51,7 +51,7 @@ class AnimalFarmer(APIView):
         return Response(animal_serializer.data)
 
     def post(self, request):
-        farmer = self.check_authentication(request)
+        farmer = check_authentication(request)
         if not farmer:
             return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
         request.data['farmer'] = farmer.id
