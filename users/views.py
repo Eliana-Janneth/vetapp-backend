@@ -134,8 +134,10 @@ class UserDetail(APIView):
         if not user:
             return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
         if user.role == 'veterinarian':
-            serializer = VeterinarianSerializer(user)
+            vet = Veterinarian.objects.get(id=user.id)
+            serializer = VeterinarianSerializer(vet)
         else:
-            serializer = FarmerSerializer(user)
+            farmer = Farmer.objects.get(id=user.id)
+            serializer = FarmerSerializer(farmer)
         return Response(serializer.data)
 

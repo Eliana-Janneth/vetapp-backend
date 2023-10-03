@@ -8,6 +8,18 @@ from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from knox.settings import CONSTANTS
 
+def get_farmer(token):
+    user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
+    if not user or not user.user.role == 'farmer':
+        return None
+    return user.user
+ 
+def check_authentication(request):
+    if not request.headers['Authorization']:
+        return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
+    token  = request.headers['Authorization'][6:]
+    return get_farmer(token)
+
 class AnimalSpeciesList(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -29,21 +41,9 @@ class AnimalRaceList(APIView):
 class AnimalFarmer(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
-    
-    def get_farmer(self, token):
-        user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
-        if not user or not user.user.role == 'farmer':
-            return None
-        return user.user
-    
-    def check_authentication(self, request):
-        if not request.headers['Authorization']:
-            return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
-        token  = request.headers['Authorization'][6:]
-        return self.get_farmer(token)
 
     def get(self, request):
-        farmer = self.check_authentication(request)
+        farmer = check_authentication(request)
         if not farmer:
             return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
         animals = Animals.objects.filter(farmer=farmer.id)
@@ -65,7 +65,22 @@ class AnimalDetail(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def get(self, request, pk):
+        farmer = get_farmer(request.headers['Authorization'][6:])
+        if pk is None:
+            return Response({'response': 'El ID del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            animal = Animals.objects.get(id=pk)
+            if animal.farmer.id != farmer.id:
+                return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
+        except Animals.DoesNotExist:    
+            return Response({'response': 'No se encontraron razas para la especie especificada'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = AnimalSerializer(animal)
+        return Response(serializer.data)
+
 class AnimalRaceBySpecie(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, specie_id):
         if specie_id is None:
