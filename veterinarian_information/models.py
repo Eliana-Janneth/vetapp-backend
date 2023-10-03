@@ -10,7 +10,6 @@ class Academic_Information(models.Model):
     country = models.CharField(max_length=32)
     academic_degree = models.CharField(max_length=100)
     currently_studying = models.BooleanField()
-    duration = models.IntegerField()
     added_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
@@ -31,12 +30,11 @@ class Work_Experience(models.Model):
     end_date = models.IntegerField(null=True)
     country = models.CharField(max_length=32)
     currently_working = models.BooleanField()
-    duration = models.IntegerField()
     added_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.company} - {self.last_name}"
+        return f"{self.company} - {self.start_date}"
     
     class Meta:
         verbose_name = 'Experiencia laboral'
