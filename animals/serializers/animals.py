@@ -1,16 +1,6 @@
 from rest_framework import serializers
 from animals.models import Animal_Species, Animal_Race, Animals
 
-class AnimalSpeciesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Animal_Species
-        fields = '__all__'
-
-class AnimalRaceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Animal_Race
-        fields = '__all__'
-
 class AnimalSerializer(serializers.ModelSerializer):
     specie = serializers.PrimaryKeyRelatedField(
         required=True, queryset=Animal_Species.objects.all(), write_only=True, error_messages={
