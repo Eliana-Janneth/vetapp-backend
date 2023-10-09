@@ -25,4 +25,4 @@ class MedicalHistorySerializer(serializers.ModelSerializer):
     })
     class Meta:
         model = MedicalHistory
-        exclude = ['id']
+        fields = '__all__'
