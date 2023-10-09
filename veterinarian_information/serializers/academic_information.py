@@ -13,9 +13,10 @@ class AcademicInformationSerializer(serializers.ModelSerializer):
             'required': 'Por favor, ingrese una universidad',
             'max_length': 'La universidad no puede tener más de 100 caracteres'
         })
-    year = serializers.IntegerField(
+    year = serializers.DateField(
         required=True, error_messages={
-        'required': 'Por favor, ingrese un año'
+            'invalid': 'La fecha de finalización debe tener el formato YYYY-MM-DD',
+            'required': 'Por favor, ingrese una fecha'
         })
     country = serializers.CharField(max_length=32, required=True, error_messages={
         'required': 'Por favor, ingrese un país',
@@ -25,10 +26,12 @@ class AcademicInformationSerializer(serializers.ModelSerializer):
         'required': 'Por favor, ingrese un título académico',
         'max_length': 'El título académico no puede tener más de 100 caracteres'
         })
-    currently_studying = serializers.BooleanField(required=True, error_messages={
-        'required': 'Por favor, ingrese si está estudiando actualmente'
-        })
+    currently_studying = serializers.BooleanField(required=False, write_only=True)
+    currently = serializers.SerializerMethodField()
 
     class Meta:
         model = Academic_Information
         exclude = ['id', 'added_time', 'update_time']
+
+    def get_currently(self, obj):
+        return "Actualidad" if obj.currently_studying else "Finalizado"
