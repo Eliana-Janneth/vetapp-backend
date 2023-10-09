@@ -19,6 +19,6 @@ class AuthVetMixin:
     def get_veterinarian(self, token):
         user = AuthToken.objects.get(
             token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
-        if not user or not user.user.role == 'farmer':
+        if not user or not user.user.role == 'veterinarian':
             return None
         return user.user
