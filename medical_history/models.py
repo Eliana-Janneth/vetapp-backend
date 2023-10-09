@@ -2,7 +2,7 @@ from django.db import models
 from animals.models import Animals
 from users.models import Veterinarian
 
-class Veterinary_Consultations(models.Model):
+class MedicalHistory(models.Model):
     id = models.AutoField(primary_key=True)
     veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE) 
     animal = models.ForeignKey(Animals, on_delete=models.CASCADE)
@@ -14,6 +14,6 @@ class Veterinary_Consultations(models.Model):
         return f"{self.veterinarian} - {self.create_date}"
     
     class Meta:
-        verbose_name = 'Consulta veterinaria'
-        verbose_name_plural = 'Consultas veterinarias'
+        verbose_name = 'Historia médica de animal'
+        verbose_name_plural = 'Historias médicas de animales'
     
