@@ -40,3 +40,15 @@ class AnimalDetail(AuthFarmerMixin,APIView):
             return Response({'response': 'No se encontraron razas para la especie especificada'}, status=status.HTTP_404_NOT_FOUND)
         serializer = AnimalSerializer(animal)
         return Response(serializer.data)
+
+class AnimalSearchByName(AuthFarmerMixin, APIView):
+    def get(self, request):
+        farmer = self.check_authentication(request)
+        if not farmer:
+            return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
+        name = request.query_params.get('name', '')
+        if name == '':
+            return Response({'response': 'El nombre del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        animals = Animals.objects.filter(name__icontains=name, farmer=farmer.id)
+        serializer = AnimalSerializer(animals, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
