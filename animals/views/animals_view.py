@@ -29,7 +29,7 @@ class AnimalsFarmer(AuthFarmerMixin, APIView):
 class AnimalDetail(AuthFarmerMixin,APIView):
 
     def get(self, request, pk):
-        farmer = self.get_farmer(request.headers['Authorization'][6:])
+        farmer = self.check_authentication(request)
         if pk is None:
             return Response({'response': 'El ID del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)
         try:
