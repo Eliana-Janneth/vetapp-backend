@@ -31,6 +31,7 @@ class Farmer(User):
 class Veterinarian(User):
     license_number = models.CharField(max_length=20, null = True, blank = True)
     license_expiry_date = models.DateField(null=True, blank=True)
+    available = models.BooleanField(default=True)
     
 
     def __str__(self):
