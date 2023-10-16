@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from veterinarian_information.models import Academic_Information
+from veterinarian_information.models import AcademicInformation
 
 
 class AcademicInformationSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class AcademicInformationSerializer(serializers.ModelSerializer):
     currently = serializers.SerializerMethodField()
 
     class Meta:
-        model = Academic_Information
+        model = AcademicInformation
         exclude = ['id', 'added_time', 'update_time']
 
     def get_currently(self, obj):

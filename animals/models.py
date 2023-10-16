@@ -2,7 +2,7 @@ from django.db import models
 from users.models import Farmer
 
 
-class Animal_Species(models.Model):
+class AnimalSpecies(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
@@ -14,9 +14,9 @@ class Animal_Species(models.Model):
         verbose_name_plural = 'Especies de animales'
 
 
-class Animal_Race(models.Model):
+class AnimalRaces(models.Model):
     id = models.AutoField(primary_key=True)
-    specie = models.ForeignKey(Animal_Species, on_delete=models.CASCADE)
+    specie = models.ForeignKey(AnimalSpecies, on_delete=models.CASCADE)
     name = models.CharField(max_length=45)
 
     def __str__(self):
@@ -31,14 +31,14 @@ class Animals(models.Model):
     id = models.AutoField(primary_key=True)
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     name = models.CharField(max_length=45)
-    specie = models.ForeignKey(Animal_Species, on_delete=models.CASCADE)
-    race = models.ForeignKey(Animal_Race, on_delete=models.CASCADE)
+    specie = models.ForeignKey(AnimalSpecies, on_delete=models.CASCADE)
+    race = models.ForeignKey(AnimalRaces, on_delete=models.CASCADE)
     color = models.CharField(max_length=200)
     birth_date = models.DateField()
     gender = models.CharField(max_length=10)
-    weight = models.CharField(max_length=10, blank=True, null=True)
-    height = models.CharField(max_length=10, blank=True, null=True)
-    description = models.CharField(max_length=1000, blank=True, null=True)
+    weight = models.CharField(max_length=10, blank=True)
+    height = models.CharField(max_length=10, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 

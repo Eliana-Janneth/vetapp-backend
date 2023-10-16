@@ -1,5 +1,5 @@
 from django.contrib import admin
-from veterinarian_information.models import Academic_Information, Work_Experience
+from veterinarian_information.models import AcademicInformation, WorkExperience
 
 class AcademicInformationAdmin(admin.ModelAdmin):
     list_display = ("veterinarian","title","university","year")
@@ -8,6 +8,6 @@ class AcademicInformationAdmin(admin.ModelAdmin):
 class WorkExperienceAdmin(admin.ModelAdmin):
     list_display = ("veterinarian","title","company","start_date")
 
-admin.site.register(Academic_Information,AcademicInformationAdmin)
-admin.site.register(Work_Experience,WorkExperienceAdmin)
+admin.site.register(AcademicInformation,AcademicInformationAdmin)
+admin.site.register(WorkExperience,WorkExperienceAdmin)
 

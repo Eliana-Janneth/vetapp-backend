@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from veterinarian_information.models import Work_Experience
+from veterinarian_information.models import WorkExperience
 
 class WorkExperienceSerializer(serializers.ModelSerializer):
     title = serializers.CharField(max_length=256, required=True, error_messages={
@@ -29,7 +29,7 @@ class WorkExperienceSerializer(serializers.ModelSerializer):
     currently = serializers.SerializerMethodField()
 
     class Meta:
-        model = Work_Experience
+        model = WorkExperience
         exclude = ['id', 'added_time', 'update_time']
 
     def get_currently(self, obj):

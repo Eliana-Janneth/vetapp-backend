@@ -1,5 +1,5 @@
 from django.contrib import admin
-from animals.models import Animals, Animal_Species, Animal_Race
+from animals.models import Animals, AnimalSpecies, AnimalRaces
 
 class AnimalAdmin(admin.ModelAdmin):
     list_display = ("id","name","specie","weight")
@@ -11,5 +11,5 @@ class AnimalRaceAdmin(admin.ModelAdmin):
     list_display = ("id","name",)
 
 admin.site.register(Animals,AnimalAdmin)
-admin.site.register(Animal_Species,AnimalSpecieAdmin)
-admin.site.register(Animal_Race,AnimalRaceAdmin)
+admin.site.register(AnimalSpecies,AnimalSpecieAdmin)
+admin.site.register(AnimalRaces,AnimalRaceAdmin)

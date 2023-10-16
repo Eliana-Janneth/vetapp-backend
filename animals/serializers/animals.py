@@ -1,15 +1,15 @@
 from rest_framework import serializers
-from animals.models import Animal_Species, Animal_Race, Animals
+from animals.models import AnimalSpecies, AnimalRaces, Animals
 
 class AnimalSerializer(serializers.ModelSerializer):
     specie = serializers.PrimaryKeyRelatedField(
-        required=True, queryset=Animal_Species.objects.all(), write_only=True, error_messages={
+        required=True, queryset=AnimalSpecies.objects.all(), write_only=True, error_messages={
             'required': 'La especie del animal es requerida',
             'does_not_exist': 'La especie especificada no existe',
             'incorrect_type': 'El nombre de la especie debe ser un número entero',
         })
     race = serializers.PrimaryKeyRelatedField(
-        required=True, queryset=Animal_Race.objects.all(), write_only=True,  error_messages={
+        required=True, queryset=AnimalRaces.objects.all(), write_only=True,  error_messages={
             'required': 'La raza del animal es requerida',
             'does_not_exist': 'La raza especificada no existe',
             'incorrect_type': 'El nombre de la raza debe ser un número entero',
@@ -56,11 +56,11 @@ class AnimalSerializer(serializers.ModelSerializer):
         specie_id = validated_data['specie'].id
         race_id = validated_data['race'].id
         try:
-            race = Animal_Race.objects.get(id=race_id)
+            race = AnimalRaces.objects.get(id=race_id)
             if race.specie_id != specie_id:
                 raise serializers.ValidationError(
                     {'response': 'La raza no pertenece a la especie'})
-        except Animal_Race.DoesNotExist:
+        except AnimalRaces.DoesNotExist:
             raise serializers.ValidationError(
                 {'response': 'La raza especificada no existe'})
         return validated_data

@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import Veterinarian
 
-class Academic_Information(models.Model):
+class AcademicInformation(models.Model):
     id = models.AutoField(primary_key=True)
     veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE)
     title = models.CharField(max_length=256)
@@ -20,7 +20,7 @@ class Academic_Information(models.Model):
         verbose_name = 'Información académica'
         verbose_name_plural = 'Informaciones académicas'
 
-class Work_Experience(models.Model):
+class WorkExperience(models.Model):
     id = models.AutoField(primary_key=True)
     veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE)
     title = models.CharField(max_length=256)
