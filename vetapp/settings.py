@@ -47,9 +47,9 @@ INSTALLED_APPS = [
     'animals',
     'chatting',
     'medical_history',
+    'farmer_request',
     'users',
     'veterinarian_information',
-    'vets_authorization',
     'rest_framework',
     'corsheaders',
     'knox'

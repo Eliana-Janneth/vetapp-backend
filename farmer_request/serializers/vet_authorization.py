@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from vets_authorization.models import Authorization
+from farmer_request.models import Authorization
 
 class VetAuthorizationSerializer(serializers.ModelSerializer):
     

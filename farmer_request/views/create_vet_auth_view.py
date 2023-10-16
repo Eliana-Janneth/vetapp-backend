@@ -3,13 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from animals.models import Animals
 from rest_framework.views import APIView
-from vets_authorization.models import Authorization
-from vets_authorization.serializers.vet_authorization import VetAuthorizationSerializer
+from farmer_request.models import Authorization
+from farmer_request.serializers.vet_authorization import VetAuthorizationSerializer
 
 class Authorization(AuthFarmerMixin, APIView):
-
-    def get(self,request):
-        pass
 
     def post(self, request):
         farmer = self.check_authentication(request)
@@ -23,6 +20,3 @@ class Authorization(AuthFarmerMixin, APIView):
         authorization = Authorization.objects.create(animal=animal, veterinarian=veterinarian)
         serializer = VetAuthorizationSerializer(authorization)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request):
-        pass

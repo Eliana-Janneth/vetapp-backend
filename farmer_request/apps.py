@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class VetsAuthorizationConfig(AppConfig):
+class FarmerRequestConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'vets_authorization'
+    name = 'farmer_request'

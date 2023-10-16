@@ -1,6 +1,5 @@
 from django.contrib import admin
-from vets_authorization.models import Authorization
-
+from farmer_request.models import FarmerRequest, Authorization
 # Register your models here.
 class VeterinarianAuthorizationsAdmin(admin.ModelAdmin):
     list_display = ("animal","veterinarian")

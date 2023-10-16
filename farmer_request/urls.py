@@ -1,6 +1,6 @@
 from django.urls import path
-from vets_authorization.views.authorization_view import AuthorizedAnimals
-from vets_authorization.views.create_vet_auth_view import Authorization
+from farmer_request.views.authorization_view import AuthorizedAnimals
+from farmer_request.views.create_vet_auth_view import Authorization
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = format_suffix_patterns([

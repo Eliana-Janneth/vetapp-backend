@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from animals.models import Animals
 from rest_framework.views import APIView
-from vets_authorization.models import Authorization
+from farmer_request.models import Authorization
 from animals.serializers.animals import AnimalSerializer
 
 class AuthorizedAnimals(AuthVetMixin, APIView):
