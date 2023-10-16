@@ -11,14 +11,12 @@ class AuthVetMixin:
     permission_classes = (IsAuthenticated,)
 
     def check_authentication(self, request):
-        if not request.headers['Authorization']:
-            return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
         token = request.headers['Authorization'][6:]
-        return self.get_veterinarian(token)
-
-    def get_veterinarian(self, token):
         user = AuthToken.objects.get(
             token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
-        if not user or not user.user.role == 'veterinarian':
+        if not user or user.user.role != 'veterinarian':
             return None
         return user.user
+    
+    def handle_error_response(self):
+        return Response({'response': 'No encontrado'}, status=status.HTTP_404_NOT_FOUND)

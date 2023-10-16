@@ -9,15 +9,13 @@ class AuthFarmerMixin:
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get_farmer(self, token):
+    def check_authentication(self, request):
+        token = request.headers['Authorization'][6:]
         user = AuthToken.objects.get(
             token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
-        if not user or not user.user.role == 'farmer':
+        if not user or user.user.role != 'farmer':
             return None
         return user.user
-
-    def check_authentication(self, request):
-        if not request.headers['Authorization']:
-            return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
-        token = request.headers['Authorization'][6:]
-        return self.get_farmer(token)
+    
+    def handle_error_response(self):
+        return Response({'response': 'No encontrado'}, status=status.HTTP_404_NOT_FOUND)

@@ -19,7 +19,7 @@ class FarmerBasic(UserMixin, APIView):
     def create_farmer(self, farmer_serializer):
         try:
             farmer_serializer.save()
-        except:
+        except Exception:
             raise serializers.ValidationError(
                 {'response': 'Ha ocurrido un error al registrarte, intentalo nuevamente más tarde'})
 

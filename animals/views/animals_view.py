@@ -10,7 +10,7 @@ class AnimalsFarmer(AuthFarmerMixin, APIView):
     def get(self, request):
         farmer = self.check_authentication(request)
         if not farmer:
-            return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
+            return self.handle_error_response()
         animals = Animals.objects.filter(farmer=farmer.id)
         animal_serializer = AnimalSerializer(animals, many=True)
         return Response(animal_serializer.data)
@@ -18,7 +18,7 @@ class AnimalsFarmer(AuthFarmerMixin, APIView):
     def post(self, request):
         farmer = self.check_authentication(request)
         if not farmer:
-            return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
+            return self.handle_error_response()
         request.data['farmer'] = farmer.id
         serializer = AnimalSerializer(data=request.data)
         if serializer.is_valid():
@@ -35,17 +35,17 @@ class AnimalDetail(AuthFarmerMixin,APIView):
         try:
             animal = Animals.objects.get(id=pk)
             if animal.farmer.id != farmer.id:
-                return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
+                return self.handle_error_response()
+            serializer = AnimalSerializer(animal)
+            return Response(serializer.data)
         except Animals.DoesNotExist:    
-            return Response({'response': 'No se encontraron razas para la especie especificada'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = AnimalSerializer(animal)
-        return Response(serializer.data)
+            return self.handle_error_response()
 
 class AnimalSearchByName(AuthFarmerMixin, APIView):
     def get(self, request):
         farmer = self.check_authentication(request)
         if not farmer:
-            return Response({'response': 'No tienes permiso para esto'}, status=status.HTTP_400_BAD_REQUEST)
+            return self.handle_error_response()
         name = request.query_params.get('name', '')
         if name == '':
             return Response({'response': 'El nombre del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)

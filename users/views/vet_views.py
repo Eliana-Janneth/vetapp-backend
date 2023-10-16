@@ -21,7 +21,7 @@ class VeterinarianBasic(UserMixin, APIView):
     def create_veterinarian(self, veterinarian_serializer):
         try:
             veterinarian_serializer.save()
-        except Exception as e:
+        except Exception:
             raise serializers.ValidationError(
                 {'response': 'Ha ocurrido un error al registrarte, intentalo nuevamente más tarde'})
 
