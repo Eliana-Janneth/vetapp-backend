@@ -7,7 +7,7 @@ class FarmerRequest(models.Model):
     id = models.AutoField(primary_key=True)
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE)
-    Animal = models.ForeignKey(Animals, on_delete=models.CASCADE)
+    animal = models.ForeignKey(Animals, on_delete=models.CASCADE)
     message = models.TextField(max_length=512)
 
     def __str__(self):
