@@ -102,3 +102,9 @@ class VeterinarianSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'response': 'Las contraseñas no coinciden'})
         return validated_data
+
+
+class VeterinarianListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Veterinarian
+        fields = ['id','first_name','last_name','city']

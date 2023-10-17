@@ -1,7 +1,7 @@
 from helpers.views.auth_farmer_view import AuthFarmerMixin
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from users.serializers.veterinarian_serializer import VeterinarianSerializer
+from users.serializers.veterinarian_serializer import VeterinarianSerializer, VeterinarianListSerializer
 from users.models import Veterinarian
 from veterinarian_information.models import AcademicInformation, WorkExperience   
 from veterinarian_information.serializers.academic_information import AcademicInformationSerializer 
@@ -13,7 +13,7 @@ class AvailableVetList(AuthFarmerMixin, APIView):
         if not farmer:
             return self.handle_error_response()
         veterinarians = self.get_available_veterinarians()
-        veterinarian_serializer = VeterinarianSerializer(veterinarians, many=True)
+        veterinarian_serializer = VeterinarianListSerializer(veterinarians, many=True)
         return Response(veterinarian_serializer.data)
     
     def get_available_veterinarians(self):
@@ -26,7 +26,7 @@ class GetVetDetail(AuthFarmerMixin, APIView):
         if not farmer:
             return self.handle_error_response()
         veterinarians = Veterinarian.objects.get(id=vet_id)
-        veterinarian_serializer = VeterinarianSerializer(veterinarians)
+        veterinarian_serializer = VeterinarianListSerializer(veterinarians)
         return Response(veterinarian_serializer.data)
 
 class GetVetAcademicInfoList(AuthFarmerMixin, APIView):
@@ -46,5 +46,5 @@ class GetVetWorkExperienceList(AuthFarmerMixin, APIView):
         if not farmer:
             return self.handle_error_response()
         work_experience = WorkExperience.objects.get(veterinarian=vet_id)
-        work_experience_serializer = WorkExperience(work_experience)
+        work_experience_serializer = WorkExperienceSerializer(work_experience)
         return Response(work_experience_serializer.data)
