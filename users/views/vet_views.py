@@ -29,7 +29,7 @@ class VeterinarianAuthenticated(AuthVetMixin, APIView):
     def get(self, request):
         veterinarian = self.check_authentication(request)
         if not veterinarian:
-            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+            return self.handle_error_response()
         veterinarian = Veterinarian.objects.get(id=veterinarian.id)
         serializer = VeterinarianSerializer(veterinarian)
         return Response(serializer.data)
@@ -38,7 +38,7 @@ class VeterinarianAuthenticated(AuthVetMixin, APIView):
         
         veterinarian = self.check_authentication(request)
         if not veterinarian:
-            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+            return self.handle_error_response()
         serializer = VeterinarianSerializer(
             veterinarian, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -50,7 +50,7 @@ class VeterinarianAvailabilityUpdateView(AuthVetMixin, APIView):
     def patch(self, request):
         veterinarian = self.check_authentication(request)
         if not veterinarian:
-            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+            return self.handle_error_response()
         available = request.data.get('available')
         if available is None or available not in [True, False]:
             return self.handle_error_response()

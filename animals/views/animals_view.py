@@ -65,5 +65,5 @@ class AnimalList(AuthFarmerMixin,APIView):
             animals = Animals.objects.filter(farmer=farmer.id)
             animal_serializer = AnimalListSerializer(animals, many=True)
             return Response(animal_serializer.data)
-        except:
+        except Animals.DoesNotExist:
             return Response({'response': 'No se encontraron animales'}, status=status.HTTP_404_NOT_FOUND)
