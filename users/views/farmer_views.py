@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import serializers
 from users.serializers.farmer_serializer import FarmerSerializer
+from users.models import Farmer
 
 
 class FarmerBasic(UserMixin, APIView):
@@ -27,16 +28,15 @@ class FarmerBasic(UserMixin, APIView):
 class FarmerAuthenticated(AuthFarmerMixin, APIView):
 
     def get(self, request):
-        token = request.headers['Authorization'][6:]
-        farmer = self.check_authentication(token)
+        farmer = self.check_authentication(request)
         if not farmer:
             return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+        farmer = Farmer.objects.get(id=farmer.id)
         serializer = FarmerSerializer(farmer)
         return Response(serializer.data)
 
     def patch(self, request):
-        token = request.headers['Authorization'][6:]
-        farmer = self.check_authentication(token)
+        farmer = self.check_authentication(request)
         if not farmer:
             return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = FarmerSerializer(farmer, data=request.data, partial=True)

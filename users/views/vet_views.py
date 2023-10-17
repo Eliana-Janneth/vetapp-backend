@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import serializers
 from users.serializers.veterinarian_serializer import VeterinarianSerializer
-
+from users.models import Veterinarian
 
 class VeterinarianBasic(UserMixin, APIView):
 
@@ -27,20 +27,35 @@ class VeterinarianBasic(UserMixin, APIView):
 class VeterinarianAuthenticated(AuthVetMixin, APIView):
 
     def get(self, request):
-        token = request.headers['Authorization'][6:]
-        veterinarian = self.check_authentication(token)
+        veterinarian = self.check_authentication(request)
         if not veterinarian:
             return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+        veterinarian = Veterinarian.objects.get(id=veterinarian.id)
         serializer = VeterinarianSerializer(veterinarian)
         return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):
-        token = request.headers['Authorization'][6:]
-        veterinarian = self.check_farmer_authentication(token)
+        
+        veterinarian = self.check_authentication(request)
         if not veterinarian:
             return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = VeterinarianSerializer(
             veterinarian, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response(serializer.data)
+
+
+class VeterinarianAvailabilityUpdateView(AuthVetMixin, APIView):
+    def patch(self, request):
+        veterinarian = self.check_authentication(request)
+        if not veterinarian:
+            return Response({'response': 'No existe un usuario con este token'}, status=status.HTTP_400_BAD_REQUEST)
+        available = request.data.get('available')
+        if available is None or available not in [True, False]:
+            return self.handle_error_response()
+        veterinarian = Veterinarian.objects.get(id=veterinarian.id)
+        veterinarian.available = available
+        veterinarian.save()
+        serializer = VeterinarianSerializer(veterinarian)
         return Response(serializer.data)

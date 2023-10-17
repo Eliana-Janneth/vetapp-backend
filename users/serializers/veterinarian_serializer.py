@@ -78,6 +78,7 @@ class VeterinarianSerializer(serializers.ModelSerializer):
         'max_length': 'El rol debe tener máximo 20 caracteres',
         'invalid': 'El rol no es válido'
     })
+    available = serializers.BooleanField(required=False)
     repeat_password = serializers.CharField(required=True, max_length=200, min_length=8, write_only=True, error_messages={
         'required': 'La confirmación de contraseña es requerida',
         'min_length': 'La confirmación de contraseña debe tener mínimo 8 caracteres',
