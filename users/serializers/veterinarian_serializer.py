@@ -107,4 +107,5 @@ class VeterinarianSerializer(serializers.ModelSerializer):
 class VeterinarianListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Veterinarian
-        fields = ['id','first_name','last_name','city']
+        fields = ['id','first_name','last_name','city','license_number','license_expiry_date']
+           
