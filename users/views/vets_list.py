@@ -50,7 +50,7 @@ class GetVetWorkExperienceList(AuthFarmerMixin, APIView):
             if not farmer:
                 return self.handle_error_response()
             work_experience = WorkExperience.objects.filter(veterinarian=vet_id)
-            work_experience_serializer = WorkExperienceSerializer(work_experience)
+            work_experience_serializer = WorkExperienceSerializer(work_experience, many=True)
             return Response(work_experience_serializer.data)
         except WorkExperience.DoesNotExist:
             return self.handle_error_response()
