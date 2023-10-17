@@ -51,11 +51,8 @@ class VeterinarianAvailabilityUpdateView(AuthVetMixin, APIView):
         veterinarian = self.check_authentication(request)
         if not veterinarian:
             return self.handle_error_response()
-        available = request.data.get('available')
-        if available is None or available not in [True, False]:
-            return self.handle_error_response()
         veterinarian = Veterinarian.objects.get(id=veterinarian.id)
-        veterinarian.available = available
+        veterinarian.available = not veterinarian.available
         veterinarian.save()
         serializer = VeterinarianSerializer(veterinarian)
         return Response(serializer.data)
