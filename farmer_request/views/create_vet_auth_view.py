@@ -13,10 +13,13 @@ class Authorization(AuthFarmerMixin, APIView):
         if not farmer:
             return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
         animal_id = request.data['animal']
-        animal = Animals.objects.get(id=animal_id)
-        if animal.farmer != farmer:
-            return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
-        veterinarian = request.data['veterinarian']
-        authorization = Authorization.objects.create(animal=animal, veterinarian=veterinarian)
-        serializer = VetAuthorizationSerializer(authorization)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        try:
+            animal = Animals.objects.get(id=animal_id)
+            if animal.farmer != farmer:
+                return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+            veterinarian = request.data['veterinarian']
+            authorization = Authorization.objects.create(animal=animal, veterinarian=veterinarian)
+            serializer = VetAuthorizationSerializer(authorization)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Animals.DoesNotExist:
+            return self.handle_error_response()

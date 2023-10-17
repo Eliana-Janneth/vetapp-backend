@@ -13,12 +13,15 @@ class FarmerMedicalHistory(AuthFarmerMixin, APIView):
         farmer = self.check_authentication(request)
         if not farmer:
             return self.handle_error_response()
-        animal = Animals.objects.get(id=animal_id)
-        if animal.farmer.id != farmer.id:
+        try:
+            animal = Animals.objects.get(id=animal_id)
+            if animal.farmer.id != farmer.id:
+                return self.handle_error_response()
+            medical_history = MedicalHistory.objects.filter(animal=animal)
+            serializer = MedicalHistorySerializer(medical_history, many=True)
+            return Response(serializer.data)
+        except Animals.DoesNotExist:
             return self.handle_error_response()
-        medical_history = MedicalHistory.objects.filter(animal=animal)
-        serializer = MedicalHistorySerializer(medical_history, many=True)
-        return Response(serializer.data)
 
 class VetMedicalHistory(AuthVetMixin, APIView):
     def get(self,request,animal_id):

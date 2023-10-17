@@ -5,6 +5,7 @@ from animals.models import AnimalSpecies
 from animals.serializers.animal_species import AnimalSpeciesSerializer
 from rest_framework.permissions import IsAuthenticated
 from knox.auth import TokenAuthentication
+from rest_framework import status
 
 
 class AnimalSpeciesList(APIView):
@@ -12,6 +13,9 @@ class AnimalSpeciesList(APIView):
     permission_classes = (IsAuthenticated,)
     
     def get(self, request):
-        animal_species = AnimalSpecies.objects.all()
-        serializer = AnimalSpeciesSerializer(animal_species, many=True)
-        return Response(serializer.data)
+        try: 
+            animal_species = AnimalSpecies.objects.all()
+            serializer = AnimalSpeciesSerializer(animal_species, many=True)
+            return Response(serializer.data)
+        except AnimalSpecies.DoesNotExist:
+            return Response({'response': 'No se encontraron especies'}, status=status.HTTP_404_NOT_FOUND)

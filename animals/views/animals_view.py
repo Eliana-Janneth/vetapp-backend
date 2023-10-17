@@ -44,21 +44,26 @@ class AnimalDetail(AuthFarmerMixin,APIView):
 class AnimalSearchByName(AuthFarmerMixin, APIView):
     def get(self, request):
         farmer = self.check_authentication(request)
-        if not farmer:
-            return self.handle_error_response()
-        name = request.query_params.get('name', '')
-        if name == '':
-            return Response({'response': 'El nombre del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)
-        animals = Animals.objects.filter(name__icontains=name, farmer=farmer.id)
-        serializer = AnimalSerializer(animals, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        try:
+            if not farmer:
+                return self.handle_error_response()
+            name = request.query_params.get('name', '')
+            if name == '':
+                return Response({'response': 'El nombre del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+            animals = Animals.objects.filter(name__icontains=name, farmer=farmer.id)
+            serializer = AnimalSerializer(animals, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Animals.DoesNotExist:
+            return Response({'response': 'No se encontraron animales con el nombre especificado'}, status=status.HTTP_404_NOT_FOUND)
 
 class AnimalList(AuthFarmerMixin,APIView):
     def get(self, request):
         farmer = self.check_authentication(request)
         if not farmer:
             return self.handle_error_response()
-        animals = Animals.objects.filter(farmer=farmer.id)
-        animal_serializer = AnimalListSerializer(animals, many=True)
-        return Response(animal_serializer.data)
+        try:
+            animals = Animals.objects.filter(farmer=farmer.id)
+            animal_serializer = AnimalListSerializer(animals, many=True)
+            return Response(animal_serializer.data)
+        except:
+            return Response({'response': 'No se encontraron animales'}, status=status.HTTP_404_NOT_FOUND)
