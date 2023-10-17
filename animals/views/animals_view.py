@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from animals.models import Animals
-from animals.serializers.animals import AnimalSerializer
+from animals.serializers.animals import AnimalSerializer, AnimalListSerializer
 
 class AnimalsFarmer(AuthFarmerMixin, APIView):
 
@@ -52,3 +52,13 @@ class AnimalSearchByName(AuthFarmerMixin, APIView):
         animals = Animals.objects.filter(name__icontains=name, farmer=farmer.id)
         serializer = AnimalSerializer(animals, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AnimalList(AuthFarmerMixin,APIView):
+    def get(self, request):
+        farmer = self.check_authentication(request)
+        if not farmer:
+            return self.handle_error_response()
+        animals = Animals.objects.filter(farmer=farmer.id)
+        animal_serializer = AnimalListSerializer(animals, many=True)
+        return Response(animal_serializer.data)

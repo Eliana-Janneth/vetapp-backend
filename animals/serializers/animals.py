@@ -64,3 +64,8 @@ class AnimalSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'response': 'La raza especificada no existe'})
         return validated_data
+
+class AnimalListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Animals
+        fields = ["id", "name"]
