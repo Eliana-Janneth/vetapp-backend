@@ -14,6 +14,7 @@ class FarmerRequestView(AuthFarmerMixin, APIView):
         if not farmer:
             return self.handle_error_response()
         animal_id = request.data['animal']
+        request.data['farmer'] = farmer.id
         animal = Animals.objects.get(id=animal_id)
         if animal.farmer != farmer:
             return self.handle_error_response()
