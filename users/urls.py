@@ -2,7 +2,7 @@ from django.urls import path
 from users.views.farmer_views import FarmerBasic, FarmerAuthenticated
 from users.views.vet_views import VeterinarianBasic, VeterinarianAuthenticated
 from users.views.user_views import UserDetail
-from users.views.vet_views import AvailableVetList, GetVetDetail, GetVetAcademicInfoList, GetVetWorkExperienceList
+from users.views.vets_list import AvailableVetList, GetVetDetail, GetVetAcademicInfoList, GetVetWorkExperienceList
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = format_suffix_patterns([
