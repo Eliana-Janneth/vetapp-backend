@@ -32,19 +32,25 @@ class GetVetDetail(AuthFarmerMixin, APIView):
 class GetVetAcademicInfoList(AuthFarmerMixin, APIView):
 
     def get(self, request, vet_id):
-        farmer = self.check_authentication(request)
-        if not farmer:
+        try:
+            farmer = self.check_authentication(request)
+            if not farmer:
+                return self.handle_error_response()
+            academic_information = AcademicInformation.objects.filter(veterinarian=vet_id)
+            academic_information_serializer = AcademicInformationSerializer(academic_information, many=True)
+            return Response(academic_information_serializer.data)
+        except AcademicInformation.DoesNotExist:
             return self.handle_error_response()
-        academic_information = AcademicInformation.objects.get(veterinarian=vet_id)
-        academic_information_serializer = AcademicInformationSerializer(academic_information, many=True)
-        return Response(academic_information_serializer.data)
     
 class GetVetWorkExperienceList(AuthFarmerMixin, APIView):
 
     def get(self, request, vet_id):
-        farmer = self.check_authentication(request)
-        if not farmer:
+        try:
+            farmer = self.check_authentication(request)
+            if not farmer:
+                return self.handle_error_response()
+            work_experience = WorkExperience.objects.filter(veterinarian=vet_id)
+            work_experience_serializer = WorkExperienceSerializer(work_experience)
+            return Response(work_experience_serializer.data)
+        except WorkExperience.DoesNotExist:
             return self.handle_error_response()
-        work_experience = WorkExperience.objects.get(veterinarian=vet_id)
-        work_experience_serializer = WorkExperienceSerializer(work_experience)
-        return Response(work_experience_serializer.data)
