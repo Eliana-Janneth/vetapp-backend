@@ -5,8 +5,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import serializers
 from users.serializers.veterinarian_serializer import VeterinarianSerializer
-from rest_framework.permissions import IsAuthenticated
-from knox.auth import TokenAuthentication
 
 
 class VeterinarianBasic(UserMixin, APIView):
@@ -27,8 +25,6 @@ class VeterinarianBasic(UserMixin, APIView):
 
 
 class VeterinarianAuthenticated(AuthVetMixin, APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         token = request.headers['Authorization'][6:]
