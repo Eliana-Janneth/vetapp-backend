@@ -6,7 +6,8 @@ class MedicalHistory(models.Model):
     id = models.AutoField(primary_key=True)
     veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE) 
     animal = models.ForeignKey(Animals, on_delete=models.CASCADE)
-    create_date = models.DateField(auto_now_add=True)
+    create_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
     diagnosis = models.CharField(max_length=2048)
     treatment = models.CharField(max_length=2048)
 

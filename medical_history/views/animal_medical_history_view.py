@@ -3,7 +3,7 @@ from helpers.views.auth_vet_view import AuthVetMixin
 from animals.models import Animals
 from medical_history.models import MedicalHistory
 from farmer_request.models import Authorization
-from medical_history.serializers.medical_history import MedicalHistorySerializer
+from medical_history.serializers.medical_history import MedicalHistorySerializer, MedicalHistoryUpdateSerializer, MedicalHistoryFarmerSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +18,7 @@ class FarmerMedicalHistory(AuthFarmerMixin, APIView):
             if animal.farmer.id != farmer.id:
                 return self.handle_error_response()
             medical_history = MedicalHistory.objects.filter(animal=animal)
-            serializer = MedicalHistorySerializer(medical_history, many=True)
+            serializer = MedicalHistoryFarmerSerializer(medical_history, many=True)
             return Response(serializer.data)
         except Animals.DoesNotExist:
             return self.handle_error_response()
@@ -55,5 +55,26 @@ class VetMedicalHistory(AuthVetMixin, APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (Authorization.DoesNotExist, Animals.DoesNotExist):
             return self.handle_error_response()
+        
+    def patch(self, request, animal_id, medical_history_id):
+        vet = self.check_authentication(request)
+        if not vet:
+            return self.handle_error_response()
+        try:
+            animal = Animals.objects.get(id=animal_id)
+            authorization = Authorization.objects.get(veterinarian=vet, animal=animal)
+            if authorization.animal.id != animal.id and vet.id != authorization.veterinarian.id:
+                return self.handle_error_response()
+            medical_history = MedicalHistory.objects.get(id=medical_history_id)
+            if medical_history.animal.id != animal.id:
+                return self.handle_error_response()
+            serializer = MedicalHistoryUpdateSerializer(medical_history, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+        except (Authorization.DoesNotExist, Animals.DoesNotExist, MedicalHistory.DoesNotExist):
+            return self.handle_error_response()
+
+
         
             
