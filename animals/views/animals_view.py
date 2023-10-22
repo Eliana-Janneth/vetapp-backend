@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from animals.models import Animals
-from animals.serializers.animals import AnimalSerializer, AnimalListSerializer
+from animals.serializers.animals import AnimalSerializer, AnimalListSerializer, AnimalUpdateSerializer
 
 class AnimalsFarmer(AuthFarmerMixin, APIView):
 
@@ -40,6 +40,23 @@ class AnimalDetail(AuthFarmerMixin,APIView):
             return Response(serializer.data)
         except Animals.DoesNotExist:    
             return self.handle_error_response()
+
+    def patch(self, request, pk):
+        farmer = self.check_authentication(request)
+        if pk is None:
+            return Response({'response': 'El ID del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            animal = Animals.objects.get(id=pk)
+            if animal.farmer.id != farmer.id:
+                return self.handle_error_response()
+            serializer = AnimalUpdateSerializer(animal, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Animals.DoesNotExist:
+            return self.handle_error_response()
+
 
 class AnimalSearchByName(AuthFarmerMixin, APIView):
     def get(self, request):
