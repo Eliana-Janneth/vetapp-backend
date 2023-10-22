@@ -27,12 +27,4 @@ class FarmerRequestView(AuthFarmerMixin, APIView):
             return self.handle_error_response()
         
 
-class GetRequestAsVet(AuthVetMixin,APIView):
-    def get(self, request):
-        vet = self.check_authentication(request)
-        if not vet:
-            return self.handle_error_response()
-        requests = FarmerRequest.objects.filter(veterinarian=vet.id)
-        serializer = FarmerRequestSerializer(requests, many=True)
-        return Response(serializer.data)
     

@@ -4,11 +4,21 @@ from animals.models import Animals
 
 
 class FarmerRequest(models.Model):
+    PENDING = 0
+    APPROVED = 1
+    REJECTED = 2
+
+    STATUS_CHOICES = (
+        (0, 'Pendiente'),
+        (1, 'Aprobado'),
+        (2, 'Rechazado'),
+    )
     id = models.AutoField(primary_key=True)
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE)
     animal = models.ForeignKey(Animals, on_delete=models.CASCADE)
     message = models.TextField(max_length=512)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 
     def __str__(self):
         return f"{self.farmer} - {self.animal}"    
@@ -22,7 +32,6 @@ class Authorization(models.Model):
     animal = models.ForeignKey(Animals, on_delete=models.CASCADE)
     veterinarian = models.ForeignKey(Veterinarian, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
-    state = models.BooleanField(default=False)
     update_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
