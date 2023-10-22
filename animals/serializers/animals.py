@@ -78,9 +78,6 @@ class AnimalUpdateSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(required=False, error_messages={
         'invalid': 'La fecha de nacimiento del animal debe tener el formato YYYY-MM-DD'
     })
-    gender = serializers.CharField(required=True, max_length=10, error_messages={
-        'max_length': 'El género del animal no puede tener más de 10 caracteres'
-    })
     weight = serializers.CharField(required=False, max_length=10, error_messages={
         'max_length': 'El peso del animal no puede tener más de 10 caracteres'
     })
@@ -93,7 +90,7 @@ class AnimalUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Animals
-        exclude = ["create_time", "update_time", "farmer", "specie", "race"]
+        exclude = ["create_time", "update_time", "farmer", "specie", "race", "gender"]
         read_only_fields = ["id"]
 
 
