@@ -17,6 +17,7 @@ class AnimalSerializer(serializers.ModelSerializer):
         })
     specie_name = serializers.SerializerMethodField()
     race_name = serializers.SerializerMethodField()
+    farmer_name = serializers.SerializerMethodField()
     name = serializers.CharField(required=True, max_length=50, error_messages={
         'required': 'El nombre del animal es requerido',
         'max_length': 'El nombre del animal no puede tener más de 50 caracteres'
@@ -52,6 +53,9 @@ class AnimalSerializer(serializers.ModelSerializer):
 
     def get_race_name(self, obj):
         return obj.race.name if obj.race else None
+    
+    def get_farmer_name(self, obj):
+        return f"{obj.farmer.first_name} {obj.farmer.last_name}" if obj.farmer else None
 
     def validate(self, validated_data):
         if 'specie' in validated_data and 'race' in validated_data:
