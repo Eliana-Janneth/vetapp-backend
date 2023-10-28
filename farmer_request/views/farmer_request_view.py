@@ -27,4 +27,28 @@ class FarmerRequestView(AuthFarmerMixin, APIView):
             return self.handle_error_response()
         
 
-    
+class FarmerRejectedRequestView(AuthFarmerMixin, APIView):
+
+    def get(self, request):
+        farmer = self.check_authentication(request)
+        if not farmer:
+            return self.handle_error_response()
+        try:
+            farmer_request = FarmerRequest.objects.filter(farmer=farmer, status='2')
+            farmer_request_serializer = FarmerRequestSerializer(farmer_request, many=True)
+            return Response(farmer_request_serializer.data, status=status.HTTP_200_OK)
+        except FarmerRequest.DoesNotExist:
+            return self.handle_error_response()
+        
+class FarmerWaitingRequestView(AuthFarmerMixin, APIView):
+
+    def get(self, request):
+        farmer = self.check_authentication(request)
+        if not farmer:
+            return self.handle_error_response()
+        try:
+            farmer_request = FarmerRequest.objects.filter(farmer=farmer, status='0')
+            farmer_request_serializer = FarmerRequestSerializer(farmer_request, many=True)
+            return Response(farmer_request_serializer.data, status=status.HTTP_200_OK)
+        except FarmerRequest.DoesNotExist:
+            return self.handle_error_response()
