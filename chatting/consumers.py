@@ -10,25 +10,22 @@ from django.shortcuts import get_object_or_404
 
 from users.models import Farmer, Veterinarian, User
 from chatting.models import Message, Chat
-from chatting.serializers.message import MessageSerializer
+from chatting.serializers.message import MessageSerializer, MessageDetailSerializer
 from chatting.serializers.chat import ChatSerializer
 
 
 class ChatConsumer(WebsocketConsumer):
     
     def connect(self):
-        print("here")
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         chat = get_object_or_404(Chat, id=self.room_name)
         user = self.scope["user"].id
-        print(user)
-        print(chat.farmer.id)
-        print(chat.veterinarian.id)
         if (user == chat.farmer.id) or (user == chat.veterinarian.id):
-            print("if")
             self.room_group_name = f"chat_{self.room_name}"
             async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
             self.accept()
+            data = self.fetch_chat_with_messages(self.room_name)
+            self.send(text_data=json.dumps(data))
         else:
             self.room_group_name = "0"
             self.close(code=404)
@@ -80,3 +77,13 @@ class ChatConsumer(WebsocketConsumer):
                 serializer.data
             )
         )
+    
+    def fetch_chat_with_messages(self, chat_id):
+        chat = Chat.objects.prefetch_related('message_set').get(id=chat_id)
+        chat_serializer = ChatSerializer(chat)
+        messages = chat.message_set.all()
+        message_serializer = MessageDetailSerializer(messages, many=True)
+        return {
+            'chat': chat_serializer.data,
+            'messages': message_serializer.data
+        }
