@@ -7,6 +7,7 @@ from medical_history.serializers.medical_history import MedicalHistorySerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from helpers.utils.pdf_generator import generate_medical_history_pdf
 
 class FarmerMedicalHistory(AuthFarmerMixin, APIView):
     def get(self,request,animal_id):
@@ -77,4 +78,15 @@ class VetMedicalHistory(AuthVetMixin, APIView):
 
 
         
-            
+class DownloadMedicalHistory(AuthFarmerMixin, APIView):
+    def get(self, request, animal_id):
+        farmer = self.check_authentication(request)
+        if not farmer:
+            return self.handle_error_response()
+        try:
+            animal = Animals.objects.get(id=animal_id)
+            if animal.farmer.id != farmer.id:
+                return self.handle_error_response()
+            return generate_medical_history_pdf(request, animal_id)
+        except Animals.DoesNotExist:
+            return self.handle_error_response()
