@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'animals',
     'chatting',
@@ -52,7 +53,8 @@ INSTALLED_APPS = [
     'veterinarian_information',
     'rest_framework',
     'corsheaders',
-    'knox'
+    'knox',
+    
 ]
 
 MIDDLEWARE = [
@@ -120,6 +122,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+RESEND_SMTP_PORT = 587
+RESEND_SMTP_USERNAME = 'resend'
+RESEND_SMTP_HOST = 'smtp.resend.com'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -169,4 +175,15 @@ REST_KNOX = {
   'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': True,
   'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
+}
+
+ASGI_APPLICATION = "vetapp.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
 }
