@@ -9,10 +9,8 @@ from knox.settings import CONSTANTS
 def get_user(token):
     try:
         user = AuthToken.objects.get(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
-        print(type(user.user))
         return user.user
     except AuthToken.DoesNotExist:
-        print("Por qué putas está acá?")
         return AnonymousUser()
 
 class TokenAuthMiddleware(BaseMiddleware):
@@ -25,6 +23,5 @@ class TokenAuthMiddleware(BaseMiddleware):
         if b'authorization' in headers:
             token_name, token_key = headers[b'authorization'].decode().split()
             if token_name == 'Token':
-                print("Compruebo si tiene permisos")
                 scope['user'] = await get_user(token_key)
         return await super().__call__(scope, receive, send)

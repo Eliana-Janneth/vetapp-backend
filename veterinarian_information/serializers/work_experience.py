@@ -33,5 +33,4 @@ class WorkExperienceSerializer(serializers.ModelSerializer):
         exclude = ['id', 'added_time', 'update_time']
 
     def get_currently(self, obj):
-        print(obj.currently_working)
         return "Actualidad" if obj.currently_working else "Finalizado"
