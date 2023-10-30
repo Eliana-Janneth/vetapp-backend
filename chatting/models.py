@@ -3,6 +3,7 @@ from users.models import Farmer, Veterinarian, User
 from animals.models import Animals
 from django.utils import timezone
 
+
 class Chat(models.Model):
     id = models.AutoField(primary_key=True)
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
@@ -15,27 +16,32 @@ class Chat(models.Model):
         self.modified = timezone.now()
         self.save()
 
-    def get_chats_by_farmer_name(self, farmer_name):
-        return Chat.objects.filter(farmer__first_name__icontains=farmer_name)
+    def get_farmer_chats_by_animal_name(self, farmer_id, animal_name):
+        return Chat.objects.filter(farmer__id=farmer_id, animal__name__icontains=animal_name)
+
+    def get_vet_chats_by_animal_name(self, vet_id, animal_name):
+        return Chat.objects.filter(veterinarian__id = vet_id, animal__name__icontains=animal_name)
     
-    def get_chats_by_vet_name(self, vet_name):
-        return Chat.objects.filter(veterinarian__first_name__icontains=vet_name)
+    def get_chats_by_farmer_name(self, vet_id, farmer_name):
+        return Chat.objects.filter(veterinarian__id = vet_id, farmer__first_name__icontains=farmer_name)
 
-    def get_chats_by_animal_name(self, animal_name):
-        return Chat.objects.filter(animal__name__icontains=animal_name)
+    def get_chats_by_vet_name(self, farmer_id, vet_name):
+        return Chat.objects.filter(farmer__id=farmer_id, veterinarian__first_name__icontains=vet_name)
 
-    def get_chats_by_farmer_and_animal_name(self, farmer_name, animal_name):
+    def get_chats_by_farmer_and_animal_name(self, vet_id, farmer_name, animal_name):
         return Chat.objects.filter(
+            veterinarian__id=vet_id,
             farmer__first_name__icontains=farmer_name,
             animal__name__icontains=animal_name
         )
-    
-    def get_chats_by_farmer_and_animal_name(self, vet_name, animal_name):
+
+    def get_chats_by_vet_and_animal_name(self, farmer_id, vet_name, animal_name):
         return Chat.objects.filter(
+            farmer__id=farmer_id,
             veterinarian__first_name__icontains=vet_name,
             animal__name__icontains=animal_name
         )
-    
+
     def __str__(self):
         return f"Chat: {self.farmer} - {self.veterinarian}"
 
@@ -43,10 +49,12 @@ class Chat(models.Model):
         verbose_name = 'Chat'
         verbose_name_plural = 'Chats'
 
+
 class Message(models.Model):
     id = models.AutoField(primary_key=True)
-    chat = models.ForeignKey(Chat,on_delete=models.CASCADE)
-    sender = models.ForeignKey(User, max_length=15, on_delete=models.SET_NULL, null=True)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    sender = models.ForeignKey(
+        User, max_length=15, on_delete=models.SET_NULL, null=True)
     message = models.CharField(max_length=1024)
     date_sent = models.DateTimeField(auto_now_add=True)
     file = models.ImageField(upload_to='chat_files/', blank=True, null=True)
@@ -62,4 +70,3 @@ class Message(models.Model):
         verbose_name = 'Mensaje'
         verbose_name_plural = 'Mensajes'
         ordering = ('-date_sent',)
-
