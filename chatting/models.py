@@ -14,6 +14,27 @@ class Chat(models.Model):
     def update_modified(self):
         self.modified = timezone.now()
         self.save()
+
+    def get_chats_by_farmer_name(self, farmer_name):
+        return Chat.objects.filter(farmer__first_name__icontains=farmer_name)
+    
+    def get_chats_by_vet_name(self, vet_name):
+        return Chat.objects.filter(veterinarian__first_name__icontains=vet_name)
+
+    def get_chats_by_animal_name(self, animal_name):
+        return Chat.objects.filter(animal__name__icontains=animal_name)
+
+    def get_chats_by_farmer_and_animal_name(self, farmer_name, animal_name):
+        return Chat.objects.filter(
+            farmer__first_name__icontains=farmer_name,
+            animal__name__icontains=animal_name
+        )
+    
+    def get_chats_by_farmer_and_animal_name(self, vet_name, animal_name):
+        return Chat.objects.filter(
+            veterinarian__first_name__icontains=vet_name,
+            animal__name__icontains=animal_name
+        )
     
     def __str__(self):
         return f"Chat: {self.farmer} - {self.veterinarian}"

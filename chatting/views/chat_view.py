@@ -26,3 +26,42 @@ class VetChatListView(AuthVetMixin, APIView):
         chats = Chat.objects.filter(veterinarian=vet)
         serializer = VetChatListSerializer(chats, many=True)
         return Response(serializer.data)
+    
+class VetChatSearchAPIView(AuthVetMixin, APIView):
+    def get(self, request):
+        farmer_name = request.query_params.get('farmer_name', '')
+        animal_name = request.query_params.get('animal_name', '')
+
+        chats = None
+
+        if farmer_name and animal_name:
+            chats = Chat().get_chats_by_farmer_and_animal_name(farmer_name, animal_name)
+        elif farmer_name:
+            chats = Chat().get_chats_by_farmer_name(farmer_name)
+        elif animal_name:
+            chats = Chat().get_chats_by_animal_name(animal_name)
+        else:
+            chats = Chat.objects.all()
+
+        serializer = VetChatListSerializer(chats, many=True)
+        return Response(serializer.data)
+
+
+class FarmerChatSearchAPIView(AuthFarmerMixin, APIView):
+    def get(self, request):
+        vet_name = request.query_params.get('vet_name', '')
+        animal_name = request.query_params.get('animal_name', '')
+
+        chats = None
+
+        if vet_name and animal_name:
+            chats = Chat().get_chats_by_vet_and_animal_name(vet_name, animal_name)
+        elif vet_name:
+            chats = Chat().get_chats_by_vet_name(vet_name)
+        elif animal_name:
+            chats = Chat().get_chats_by_animal_name(animal_name)
+        else:
+            chats = Chat.objects.all()
+
+        serializer = FarmerChatListSerializer(chats, many=True)
+        return Response(serializer.data)
