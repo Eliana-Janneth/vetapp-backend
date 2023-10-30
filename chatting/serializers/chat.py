@@ -25,8 +25,8 @@ class FarmerChatListSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Chat
-            exclude = ('farmer','veterinarian','animal','start_time')
-            depth = 1
+            exclude = ('farmer','veterinarian','animal','created')
+            ordering = ('-modified',)
 
 
 class VetChatListSerializer(serializers.ModelSerializer):
@@ -47,5 +47,5 @@ class VetChatListSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Chat
-            exclude = ('farmer','veterinarian','animal','start_time')
-            depth = 1
+            exclude = ('farmer','veterinarian','animal','created')
+            ordering = ('-modified',)

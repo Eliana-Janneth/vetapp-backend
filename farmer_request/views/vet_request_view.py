@@ -27,7 +27,7 @@ class VetRequestView(AuthVetMixin, APIView):
             if vet_response is True:
                 farmer_request.status = 1
                 create_response = self.create_authorization(vet.id, farmer_request.animal.id)
-                
+                self.create_chat(vet.id, farmer_request.animal.id, farmer_request.farmer.id)
             else:
                 farmer_request.status = 2
             farmer_request.save()
