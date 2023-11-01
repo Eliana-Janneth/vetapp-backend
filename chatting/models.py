@@ -2,7 +2,7 @@ from django.db import models
 from users.models import Farmer, Veterinarian, User
 from animals.models import Animals
 from django.utils import timezone
-
+from django.db.models import Q
 
 class Chat(models.Model):
     id = models.AutoField(primary_key=True)
@@ -16,32 +16,19 @@ class Chat(models.Model):
         self.modified = timezone.now()
         self.save()
 
-    def get_farmer_chats_by_animal_name(self, farmer_id, animal_name):
-        return Chat.objects.filter(farmer__id=farmer_id, animal__name__icontains=animal_name)
-
-    def get_vet_chats_by_animal_name(self, vet_id, animal_name):
-        return Chat.objects.filter(veterinarian__id = vet_id, animal__name__icontains=animal_name)
-    
-    def get_chats_by_farmer_name(self, vet_id, farmer_name):
-        return Chat.objects.filter(veterinarian__id = vet_id, farmer__first_name__icontains=farmer_name)
-
-    def get_chats_by_vet_name(self, farmer_id, vet_name):
-        return Chat.objects.filter(farmer__id=farmer_id, veterinarian__first_name__icontains=vet_name)
-
-    def get_chats_by_farmer_and_animal_name(self, vet_id, farmer_name, animal_name):
+    @staticmethod
+    def get_chats_by_farmer_or_animal_name(vet_id, name):
         return Chat.objects.filter(
-            veterinarian__id=vet_id,
-            farmer__first_name__icontains=farmer_name,
-            animal__name__icontains=animal_name
+            Q(veterinarian__id=vet_id),
+            Q(animal__name__icontains=name) | Q(farmer__first_name__icontains=name) | Q(farmer__last_name__icontains=name)
         )
 
-    def get_chats_by_vet_and_animal_name(self, farmer_id, vet_name, animal_name):
+    @staticmethod
+    def get_chats_by_vet_or_animal_name(farmer_id, name):
         return Chat.objects.filter(
-            farmer__id=farmer_id,
-            veterinarian__first_name__icontains=vet_name,
-            animal__name__icontains=animal_name
+            Q(farmer__id=farmer_id),
+            Q(animal__name__icontains=name) | Q(veterinarian__first_name__icontains=name) | Q(veterinarian__last_name__icontains=name)
         )
-
     def __str__(self):
         return f"Chat: {self.farmer} - {self.veterinarian}"
 
