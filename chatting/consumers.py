@@ -38,45 +38,49 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
-        chat_type = {"type": "chat_message"}
+        chat_type = {"type": "chat_message", "sender_id": self.scope["user"].id}  # Agregar el ID del remitente
         return_dict = {**chat_type, **text_data_json}
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             return_dict,
         )
-
+    
     def chat_message(self, event):
-        text_data_json = event.copy()
-        text_data_json.pop("type")
-        message, attachment = (
-            text_data_json["message"],
-            text_data_json.get("attachment"),
-        )
-        chat = Chat.objects.get(id=int(self.room_name))
-        sender = self.scope['user']
-        if attachment:
-            file_str, file_ext = attachment["data"], attachment["format"]
-            file_data = ContentFile(
-                base64.b64decode(file_str), name=f"{secrets.token_hex(8)}.{file_ext}"
+        message_sender = event['sender_id']
+        current_user = self.scope["user"].id
+        if message_sender != current_user:
+            text_data_json = event.copy()
+            text_data_json.pop("type")
+            text_data_json.pop("sender_id")
+            message, attachment = (
+                text_data_json["message"],
+                text_data_json.get("attachment"),
             )
-            _message = Message.objects.create(
-                sender=sender,
-                file=file_data,
-                message=message,
-                chat=chat,
+            chat = Chat.objects.get(id=int(self.room_name))
+            sender = self.scope['user']
+            if attachment:
+                file_str, file_ext = attachment["data"], attachment["format"]
+                file_data = ContentFile(
+                    base64.b64decode(file_str), name=f"{secrets.token_hex(8)}.{file_ext}"
+                )
+                _message = Message.objects.create(
+                    sender=sender,
+                    file=file_data,
+                    message=message,
+                    chat=chat,
+                )
+            else:
+                _message = Message.objects.create(
+                    sender=sender,
+                    message=message,
+                    chat=chat,
+                )
+            serializer = MessageDetailSerializer(instance=_message)
+            self.send(
+                text_data=json.dumps(
+                    serializer.data
+                )
             )
-        else:
-            _message = Message.objects.create(
-                sender=sender,
-                message=message,
-                chat=chat,
-            )
-        serializer = MessageDetailSerializer(instance=_message)
-        self.send(
-            text_data=json.dumps(
-                serializer.data
-            )
-        )
     
     def fetch_chat_with_messages(self, chat_id):
         chat = Chat.objects.prefetch_related('message_set').get(id=chat_id)
