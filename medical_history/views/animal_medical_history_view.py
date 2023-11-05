@@ -33,7 +33,7 @@ class VetMedicalHistory(AuthVetMixin, APIView):
             if authorization.animal.id != animal.id and vet.id != authorization.veterinarian.id:
                 return self.handle_error_response()
             medical_history = MedicalHistory.objects.filter(animal=animal)
-            serializer = MedicalHistorySerializer(medical_history, many=True)
+            serializer = MedicalHistoryFarmerSerializer(medical_history, many=True)
             return Response(serializer.data)
         except Authorization.DoesNotExist:
             return self.handle_error_response()

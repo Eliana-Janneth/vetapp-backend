@@ -17,4 +17,5 @@ class MedicalHistory(models.Model):
     class Meta:
         verbose_name = 'Historia médica de animal'
         verbose_name_plural = 'Historias médicas de animales'
+        ordering = ['-update_date']
     

@@ -14,6 +14,6 @@ class AuthorizedAnimals(AuthVetMixin, APIView):
         if not veterinarian:
             return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
         list_authorized_animals = Authorization.objects.filter(veterinarian=veterinarian).values_list('animal', flat=True)
-        authorized_animals = Animals.objects.filter(id__in=list_authorized_animals)
+        authorized_animals = Animals.objects.filter(id__in=list_authorized_animals).order_by('-authorization__update_time')
         serializer = AnimalSerializer(authorized_animals, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
