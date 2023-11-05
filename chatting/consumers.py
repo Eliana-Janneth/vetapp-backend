@@ -15,21 +15,21 @@ from chatting.serializers.chat import ChatSerializer
 
 
 class ChatConsumer(WebsocketConsumer):
-    
+
     def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         chat = get_object_or_404(Chat, id=self.room_name)
         user = self.scope["user"].id
         if (user == chat.farmer.id) or (user == chat.veterinarian.id):
             self.room_group_name = f"chat_{self.room_name}"
-            async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
+            async_to_sync(self.channel_layer.group_add)(
+                self.room_group_name, self.channel_name)
             self.accept()
             data = self.fetch_chat_with_messages(self.room_name)
             self.send(text_data=json.dumps(data))
         else:
             self.room_group_name = "0"
             self.close(code=404)
-            
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
@@ -38,13 +38,15 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
-        chat_type = {"type": "chat_message", "sender_id": self.scope["user"].id}  # Agregar el ID del remitente
+        # Agregar el ID del remitente
+        chat_type = {"type": "chat_message",
+                     "sender_id": self.scope["user"].id}
         return_dict = {**chat_type, **text_data_json}
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             return_dict,
         )
-    
+
     def chat_message(self, event):
         message_sender = event['sender_id']
         current_user = self.scope["user"].id
@@ -76,12 +78,22 @@ class ChatConsumer(WebsocketConsumer):
                     chat=chat,
                 )
             serializer = MessageDetailSerializer(instance=_message)
-            self.send(
-                text_data=json.dumps(
-                    serializer.data
-                )
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'send_to_group',
+                    'message': serializer.data
+                }
             )
-    
+
+
+    def send_to_group(self, event):
+        # Envía el mensaje a todos los participantes de la sala (grupo)
+        message = event['message']
+        self.send(text_data=json.dumps(
+            message
+        ))
+
     def fetch_chat_with_messages(self, chat_id):
         chat = Chat.objects.prefetch_related('message_set').get(id=chat_id)
         chat_serializer = ChatSerializer(chat)
