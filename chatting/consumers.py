@@ -7,6 +7,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
+from farmer_request.models import Authorization
 
 from users.models import Farmer, Veterinarian, User
 from chatting.models import Message, Chat
@@ -18,9 +19,9 @@ class ChatConsumer(WebsocketConsumer):
 
     def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        chat = get_object_or_404(Chat, id=self.room_name)
+        self.chat = get_object_or_404(Chat, id=self.room_name)
         user = self.scope["user"].id
-        if (user == chat.farmer.id) or (user == chat.veterinarian.id):
+        if (user == self.chat.farmer.id) or (user == self.chat.veterinarian.id):
             self.room_group_name = f"chat_{self.room_name}"
             async_to_sync(self.channel_layer.group_add)(
                 self.room_group_name, self.channel_name)
@@ -32,9 +33,16 @@ class ChatConsumer(WebsocketConsumer):
             self.close(code=404)
 
     def disconnect(self, close_code):
+        self.update_authorization()
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name, self.channel_name
         )
+
+    def update_authorization(self):
+        authorization = Authorization.objects.get(
+            veterinarian=self.chat.veterinarian, animal=self.chat.animal)
+        authorization.update_time = datetime.now()
+        authorization.save()
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
