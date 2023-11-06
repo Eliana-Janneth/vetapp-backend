@@ -58,7 +58,7 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         message_sender = event['sender_id']
         current_user = self.scope["user"].id
-        if message_sender != current_user:
+        if message_sender == current_user:
             text_data_json = event.copy()
             text_data_json.pop("type")
             text_data_json.pop("sender_id")
