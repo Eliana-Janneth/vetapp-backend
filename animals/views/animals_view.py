@@ -53,7 +53,9 @@ class AnimalDetail(AuthFarmerMixin,APIView):
             serializer = AnimalUpdateSerializer(animal, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                updated_animal = Animals.objects.get(id=pk)
+                updated_serializer = AnimalSerializer(updated_animal)
+                return Response(updated_serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Animals.DoesNotExist:
             return self.handle_error_response()
