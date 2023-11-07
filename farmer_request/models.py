@@ -1,7 +1,8 @@
 from django.db import models
 from users.models import Farmer, Veterinarian
 from animals.models import Animals
-
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 class FarmerRequest(models.Model):
     PENDING = 0
@@ -9,9 +10,9 @@ class FarmerRequest(models.Model):
     REJECTED = 2
 
     STATUS_CHOICES = (
-        (0, 'Pendiente'),
-        (1, 'Aprobado'),
-        (2, 'Rechazado'),
+        (0, 'PENDIENTE'),
+        (1, 'APROBADA'),
+        (2, 'RECHAZADA'),
     )
     id = models.AutoField(primary_key=True)
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
@@ -21,11 +22,23 @@ class FarmerRequest(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 
     def __str__(self):
-        return f"{self.farmer} - {self.animal}"    
+        return f"{self.farmer} - {self.animal}"   
+
+    def change_status(self, status):
+        self.status = status
+        self.farmer.notify_message(self)
+
+    def notify(self):
+        self.veterinarian.notify_message(self)
     
     class Meta:
         verbose_name = 'Solicitud de veterinario'
         verbose_name_plural = 'Solcitudes de veterinarios'
+
+@receiver(post_save, sender=FarmerRequest)
+def notify_farmer(sender, instance, created, **kwargs):
+    if created:
+        instance.notify()
 
 class Authorization(models.Model):
     id = models.AutoField(primary_key=True)

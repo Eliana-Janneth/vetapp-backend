@@ -46,7 +46,7 @@ class Animals(models.Model):
         return self.post.get_absolute_url()
 
     def __str__(self):
-        return f"{self.specie} - {self.name}"
+        return f"{self.name} - {self.specie}"
 
     class Meta:
         verbose_name = 'Animal'

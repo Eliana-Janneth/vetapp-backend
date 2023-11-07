@@ -8,13 +8,6 @@ from rest_framework.views import APIView
 from farmer_request.models import FarmerRequest, Authorization
 from rest_framework import status
 
-import resend
-from django.core.mail import EmailMessage, get_connection
-from django.conf import settings
-from django.http import JsonResponse
-
-
-
 class VetRequestView(AuthVetMixin, APIView):
 
     def post(self, request, farmer_request_id):
@@ -25,13 +18,14 @@ class VetRequestView(AuthVetMixin, APIView):
             farmer_request = FarmerRequest.objects.get(id=farmer_request_id)
             vet_response = request.data.get('vet_response', False)
             if vet_response is True:
-                farmer_request.status = 1
+                farmer_request.change_status(1)
                 create_response = self.create_authorization(vet.id, farmer_request.animal.id)
                 self.create_chat(vet.id, farmer_request.animal.id, farmer_request.farmer.id)
+                return create_response
             else:
-                farmer_request.status = 2
+                farmer_request.change_status(2)
             farmer_request.save()
-            return create_response
+            return Response(status=status.HTTP_200_OK)
         except FarmerRequest.DoesNotExist:
             return self.handle_error_response()
 
@@ -55,7 +49,7 @@ class VetRequestView(AuthVetMixin, APIView):
             return self.handle_error_response()
         chat = Chat.objects.filter(animal=animal, veterinarian=vet, farmer=farmer)
         if chat.exists():
-            print("TODO: enviar mensaje de error")
+            return Response({'response': 'Ya existe un chat para este veterinario y animal', "chat_id": chat.id},status=status.HTTP_400_BAD_REQUEST)
         else:
             chat = Chat.objects.create(animal=animal, veterinarian=vet, farmer=farmer)
             return Response(status=status.HTTP_200_OK)
