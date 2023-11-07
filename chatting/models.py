@@ -57,4 +57,4 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'Mensaje'
         verbose_name_plural = 'Mensajes'
-        ordering = ('-date_sent',)
+        ordering = ('date_sent',)
