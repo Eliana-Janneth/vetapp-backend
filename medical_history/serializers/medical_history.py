@@ -35,6 +35,7 @@ class MedicalHistoryUpdateSerializer(serializers.ModelSerializer):
     treatment = serializers.CharField(max_length=2048, required=False, error_messages={
         'max_length': 'El tratamiento no puede tener más de 2048 caracteres',
     })
+    
     class Meta:
         model = MedicalHistory
         exclude = ('veterinarian', 'animal')
@@ -43,9 +44,16 @@ class MedicalHistoryUpdateSerializer(serializers.ModelSerializer):
 
 class MedicalHistoryFarmerSerializer(serializers.ModelSerializer):
     vet_name = serializers.SerializerMethodField()
+    can_modify = serializers.SerializerMethodField()
 
     def get_vet_name(self, obj):
         return f"{obj.veterinarian.first_name} {obj.veterinarian.last_name}" if obj.veterinarian else None
+    
+    def get_can_modify(self, obj):
+        print(self.context['vet'])
+        print(obj.veterinarian.id)
+        return True if obj.veterinarian.id == self.context['vet'] else False
+    
     class Meta:
         model = MedicalHistory
         exclude = ['veterinarian', 'animal']
