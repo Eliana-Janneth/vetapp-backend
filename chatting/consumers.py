@@ -2,16 +2,13 @@ import base64
 import json
 import secrets
 from datetime import datetime
-
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from farmer_request.models import Authorization
-
-from users.models import Farmer, Veterinarian, User
 from chatting.models import Message, Chat
-from chatting.serializers.message import MessageSerializer, MessageDetailSerializer
+from chatting.serializers.message import MessageDetailSerializer
 from chatting.serializers.chat import ChatSerializer
 
 

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import serializers
-from users.serializers.veterinarian_serializer import VeterinarianSerializer
+from users.serializers.veterinarian_serializer import VeterinarianSerializer, VeterinarianUpdateInfoSerializer
 from users.models import Veterinarian
 
 class VeterinarianBasic(UserMixin, APIView):
@@ -39,7 +39,7 @@ class VeterinarianAuthenticated(AuthVetMixin, APIView):
         veterinarian = self.check_authentication(request)
         if not veterinarian:
             return self.handle_error_response()
-        serializer = VeterinarianSerializer(
+        serializer = VeterinarianUpdateInfoSerializer(
             veterinarian, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
