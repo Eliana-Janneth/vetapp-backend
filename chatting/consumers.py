@@ -68,7 +68,7 @@ class ChatConsumer(WebsocketConsumer):
             if attachment:
                 file_str, file_ext = attachment["data"], attachment["format"]
                 file_data = ContentFile(
-                    base64.b64decode(file_str), name=f"{secrets.token_hex(8)}.{file_ext}"
+                    base64.b64decode(file_str), name=f"{secrets.token_hex(12)}.{file_ext}"
                 )
                 _message = Message.objects.create(
                     sender=sender,
