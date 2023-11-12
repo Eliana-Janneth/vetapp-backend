@@ -11,13 +11,16 @@ class MessageSerializer(serializers.ModelSerializer):
 class MessageDetailSerializer(serializers.ModelSerializer):
         sender_name = serializers.SerializerMethodField()
         sender_role = serializers.SerializerMethodField()
-
+        has_file = serializers.SerializerMethodField()
 
         def get_sender_name(self, obj):
             return f"{obj.sender.first_name} {obj.sender.last_name}" if obj.sender else None
         
         def get_sender_role(self, obj):
             return f"{obj.sender.role}" if obj.sender else None
+        
+        def get_has_file(self, obj):
+            return True if obj.file else False
         
         class Meta:
             model = Message
