@@ -11,11 +11,12 @@ class AuthUserMixin:
     permission_classes = (IsAuthenticated,)
 
     def get_user_info(self, request):
-        if not request.headers['Authorization']:
-            return Response({'response': 'No estás logueado'}, status=status.HTTP_400_BAD_REQUEST)
         token = request.headers['Authorization'][6:]
         user = AuthToken.objects.get(
             token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
         if not user:
             return None
         return user.user
+
+    def handle_error_response(self):
+        return Response({'response': 'No encontrado'}, status=status.HTTP_404_NOT_FOUND)
