@@ -115,4 +115,4 @@ class VeterinarianUpdateInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Veterinarian
-        fields = ['first_name','last_name','phone_number','address','city','license_number','license_expiry_date']
+        fields = ['license_number','license_expiry_date']
