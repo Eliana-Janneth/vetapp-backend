@@ -11,10 +11,8 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 
 
-def generate_medical_history_pdf(request, animal_id):
+def generate_medical_history_pdf(medical_histories):
     buffer = io.BytesIO()
-
-    medical_histories = MedicalHistory.objects.filter(animal=animal_id)
     p = canvas.Canvas(buffer, pagesize=letter)
     p.setTitle = f"Historia médica de {medical_histories[0].animal.name} - {format_date(datetime.now())} "
     height_page, width_page = letter

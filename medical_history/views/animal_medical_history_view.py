@@ -3,7 +3,7 @@ from helpers.views.auth_vet_view import AuthVetMixin
 from animals.models import Animals
 from medical_history.models import MedicalHistory
 from farmer_request.models import Authorization
-from medical_history.serializers.medical_history import MedicalHistorySerializer, MedicalHistoryUpdateSerializer, MedicalHistoryFarmerSerializer
+from medical_history.serializers.medical_history import MedicalHistorySerializer, MedicalHistoryUpdateSerializer, MedicalHistoryBaseSerializer, MedicalHistoryVetSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +19,7 @@ class FarmerMedicalHistory(AuthFarmerMixin, APIView):
             if animal.farmer.id != farmer.id:
                 return self.handle_error_response()
             medical_history = MedicalHistory.objects.filter(animal=animal)
-            serializer = MedicalHistoryFarmerSerializer(medical_history, many=True)
+            serializer = MedicalHistoryBaseSerializer(medical_history, many=True)
             return Response(serializer.data)
         except Animals.DoesNotExist:
             return self.handle_error_response()
@@ -33,7 +33,7 @@ class VetMedicalHistory(AuthVetMixin, APIView):
             if authorization.animal.id != animal.id and vet.id != authorization.veterinarian.id:
                 return self.handle_error_response()
             medical_history = MedicalHistory.objects.filter(animal=animal)
-            serializer = MedicalHistoryFarmerSerializer(medical_history, context={'vet':vet.id}, many=True)
+            serializer = MedicalHistoryVetSerializer(medical_history, context={'vet':vet.id}, many=True)
             return Response(serializer.data)
         except Authorization.DoesNotExist:
             return self.handle_error_response()
@@ -87,6 +87,13 @@ class DownloadMedicalHistory(AuthFarmerMixin, APIView):
             animal = Animals.objects.get(id=animal_id)
             if animal.farmer.id != farmer.id:
                 return self.handle_error_response()
-            return generate_medical_history_pdf(request, animal_id)
+            medical_stories = MedicalHistory.objects.filter(animal=animal_id)
+            print(len(medical_stories))
+            print(medical_stories.count())
+            #print(medical_stories[0])
+            if medical_stories.count() == 0:
+                return Response({'response': 'No hay historias médicas para este animal'}, status=status.HTTP_404_NOT_FOUND)
+            return generate_medical_history_pdf(medical_stories)
+            
         except Animals.DoesNotExist:
             return self.handle_error_response()

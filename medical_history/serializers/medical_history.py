@@ -41,13 +41,19 @@ class MedicalHistoryUpdateSerializer(serializers.ModelSerializer):
         exclude = ('veterinarian', 'animal')
         read_only_fields = ('veterinarian', 'animal', 'create_date', 'id')
 
-
-class MedicalHistoryFarmerSerializer(serializers.ModelSerializer):
+class MedicalHistoryBaseSerializer(serializers.ModelSerializer):
     vet_name = serializers.SerializerMethodField()
-    can_modify = serializers.SerializerMethodField()
-
     def get_vet_name(self, obj):
         return f"{obj.veterinarian.first_name} {obj.veterinarian.last_name}" if obj.veterinarian else None
+    
+    class Meta:
+        model = MedicalHistory
+        exclude = ['veterinarian', 'animal']
+        read_only_fields = ('veterinarian', 'animal', 'create_date', 'update_date', 'diagnosis', 'treatment', 'id')
+    
+
+class MedicalHistoryVetSerializer(MedicalHistoryBaseSerializer):
+    can_modify = serializers.SerializerMethodField()
     
     def get_can_modify(self, obj):
         print(self.context['vet'])
