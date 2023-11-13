@@ -34,11 +34,11 @@ class VeterinarianAuthenticated(AuthVetMixin, APIView):
         serializer = VeterinarianSerializer(veterinarian)
         return Response(serializer.data)
 
-    def patch(self, request, *args, **kwargs):
-        
+    def patch(self, request):
         veterinarian = self.check_authentication(request)
         if not veterinarian:
             return self.handle_error_response()
+        veterinarian = Veterinarian.objects.get(id=veterinarian.id)
         serializer = VeterinarianUpdateInfoSerializer(
             veterinarian, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)

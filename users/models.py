@@ -24,9 +24,6 @@ class User(AbstractUser):
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
 
-    def notify_message(self, farmer_request):
-        pass
-
 
 class Farmer(User):
 
