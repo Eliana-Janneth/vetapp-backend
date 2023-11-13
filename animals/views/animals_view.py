@@ -68,10 +68,9 @@ class AnimalSearchByName(AuthFarmerMixin, APIView):
             if not farmer:
                 return self.handle_error_response()
             search_query = request.query_params.get('by', '')
-            if search_query == '':
-                return Response({'response': 'El nombre del animal es requerido'}, status=status.HTTP_400_BAD_REQUEST)
             animals = Animals.objects.filter(farmer=farmer.id)
-            animals = animals.filter(Q(name__icontains=search_query)|Q(race__in=AnimalRaces.objects.filter(Q(name__icontains=search_query))) |
+            if search_query:
+                animals = animals.filter(Q(name__icontains=search_query)|Q(race__in=AnimalRaces.objects.filter(Q(name__icontains=search_query))) |
                                              Q(specie__in=AnimalSpecies.objects.filter(Q(name__icontains=search_query))))
             serializer = AnimalSerializer(animals, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)

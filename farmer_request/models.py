@@ -3,6 +3,7 @@ from users.models import Farmer, Veterinarian
 from animals.models import Animals
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from asgiref.sync import sync_to_async
 
 class FarmerRequest(models.Model):
     PENDING = 0
@@ -26,7 +27,8 @@ class FarmerRequest(models.Model):
 
     def change_status(self, status):
         self.status = status
-        self.farmer.notify_message(self)
+        self.save()
+        sync_to_async(self.farmer.notify_message(self))
 
     def notify(self):
         self.veterinarian.notify_message(self)
@@ -38,7 +40,7 @@ class FarmerRequest(models.Model):
 @receiver(post_save, sender=FarmerRequest)
 def notify_farmer(sender, instance, created, **kwargs):
     if created:
-        instance.notify()
+        sync_to_async(instance.notify())
 
 class Authorization(models.Model):
     id = models.AutoField(primary_key=True)

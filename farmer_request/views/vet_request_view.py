@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from farmer_request.models import FarmerRequest, Authorization
 from rest_framework import status
 
+
 class VetRequestView(AuthVetMixin, APIView):
 
     def post(self, request, farmer_request_id):
@@ -47,8 +48,8 @@ class VetRequestView(AuthVetMixin, APIView):
             farmer = Farmer.objects.get(id=farmer_id)
         except (Animals.DoesNotExist, Veterinarian.DoesNotExist, Farmer.DoesNotExist):
             return self.handle_error_response()
-        chat = Chat.objects.filter(animal=animal, veterinarian=vet, farmer=farmer)
-        if chat.exists():
+        chat = Chat.objects.filter(animal=animal, veterinarian=vet, farmer=farmer).first()
+        if chat:
             return Response({'response': 'Ya existe un chat para este veterinario y animal', "chat_id": chat.id},status=status.HTTP_400_BAD_REQUEST)
         else:
             chat = Chat.objects.create(animal=animal, veterinarian=vet, farmer=farmer)
