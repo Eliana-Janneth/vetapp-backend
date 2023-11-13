@@ -9,7 +9,7 @@ class AcademicInformation(models.Model):
     year = models.DateField()
     country = models.CharField(max_length=32)
     academic_degree = models.CharField(max_length=100)
-    currently_studying = models.BooleanField()
+    currently = models.BooleanField(default=False)
     added_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
@@ -29,7 +29,7 @@ class WorkExperience(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True)
     country = models.CharField(max_length=32)
-    currently_working = models.BooleanField()
+    currently = models.BooleanField(default=False)
     added_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 

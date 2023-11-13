@@ -25,8 +25,7 @@ class WorkExperienceSerializer(serializers.ModelSerializer):
         'required': 'Por favor, ingrese un país',
         'max_length': 'El país no puede tener más de 32 caracteres'
         })
-    currently_working = serializers.BooleanField(required=False, write_only=True)
-    currently = serializers.SerializerMethodField()
+    currently = serializers.BooleanField(required=False)
 
     class Meta:
         model = WorkExperience

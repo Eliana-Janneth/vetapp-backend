@@ -26,12 +26,9 @@ class AcademicInformationSerializer(serializers.ModelSerializer):
         'required': 'Por favor, ingrese un título académico',
         'max_length': 'El título académico no puede tener más de 100 caracteres'
         })
-    currently_studying = serializers.BooleanField(required=False, write_only=True)
-    currently = serializers.SerializerMethodField()
+    currently = serializers.BooleanField(required=False)
+    
 
     class Meta:
         model = AcademicInformation
         exclude = ['id', 'added_time', 'update_time']
-
-    def get_currently(self, obj):
-        return "Actualidad" if obj.currently_studying else "Finalizado"
