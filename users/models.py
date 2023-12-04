@@ -4,7 +4,6 @@ from django.core.mail import send_mail
 import environ
 env = environ.Env()
 
-
 class User(AbstractUser):
     id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=40)
@@ -48,11 +47,11 @@ class Farmer(User):
                         """
 
         message = f"""
-        Estimado Granjero,\n\n
-        Ha recibido una respuesta a su solicitud para atender a {farmer_request.animal} por parte de {farmer_request.veterinarian}.\n\n
+        Estimado Granjero,
+        \n\nHa recibido una respuesta a su solicitud para atender a {farmer_request.animal} por parte de {farmer_request.veterinarian}.\n\n
         {response}
-        \n\nAtentamente,
-        \nEl Equipo de tu aplicación
+        \nAtentamente,
+        \nEl Equipo de Vetapp
         """
         send_mail(
             subject,
@@ -78,10 +77,10 @@ class Veterinarian(User):
     # Reemplaza 'from@example.com' con tu dirección de correo electrónico
     def notify_message(self, farmer_request):
         subject = f"Vetapp - Solicitud de veterinario para {farmer_request.animal} por {farmer_request.farmer}"
-        message = f"""Estimado Veterinario,\n\n
-        Se ha realizado una solicitud para atender a {farmer_request.animal} por parte de {farmer_request.farmer}.
-        \n\nMensaje: {farmer_request.message}
-        \n\nAtentamente,
+        message = f"""Estimado Veterinario,
+        \n\nSe ha realizado una solicitud para atender a {farmer_request.animal} por parte de {farmer_request.farmer}.
+        \nMensaje: {farmer_request.message}
+        \nAtentamente,
         \nEl Equipo de Vetapp"""
         send_mail(
             subject,

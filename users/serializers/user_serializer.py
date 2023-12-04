@@ -1,7 +1,4 @@
 from rest_framework import serializers
-from users.models import Veterinarian
-from django.contrib.auth.hashers import make_password
-
 
 class UserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True, max_length=40, min_length=2, error_messages={

@@ -43,7 +43,6 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
-        # Agregar el ID del remitente
         chat_type = {"type": "chat_message",
                      "sender_id": self.scope["user"].id}
         return_dict = {**chat_type, **text_data_json}
@@ -91,9 +90,7 @@ class ChatConsumer(WebsocketConsumer):
                 }
             )
 
-
     def send_to_group(self, event):
-        # Envía el mensaje a todos los participantes de la sala (grupo)
         message = event['message']
         self.send(text_data=json.dumps(
             message

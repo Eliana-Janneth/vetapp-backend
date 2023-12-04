@@ -1,5 +1,4 @@
 from helpers.views.auth_vet_view import AuthVetMixin
-from helpers.views.auth_farmer_view import AuthFarmerMixin
 from rest_framework.response import Response
 from rest_framework import status
 from animals.models import AnimalRaces, AnimalSpecies, Animals

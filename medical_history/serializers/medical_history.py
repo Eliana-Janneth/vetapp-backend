@@ -56,8 +56,6 @@ class MedicalHistoryVetSerializer(MedicalHistoryBaseSerializer):
     can_modify = serializers.SerializerMethodField()
     
     def get_can_modify(self, obj):
-        print(self.context['vet'])
-        print(obj.veterinarian.id)
         return True if obj.veterinarian.id == self.context['vet'] else False
     
     class Meta:

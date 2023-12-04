@@ -2,7 +2,6 @@ from helpers.views.auth_vet_view import AuthVetMixin
 from animals.models import Animals
 from farmer_request.models import Authorization
 from animals.serializers.animals import AnimalSerializer
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 

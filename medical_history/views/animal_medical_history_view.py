@@ -88,9 +88,6 @@ class DownloadMedicalHistory(AuthFarmerMixin, APIView):
             if animal.farmer.id != farmer.id:
                 return self.handle_error_response()
             medical_stories = MedicalHistory.objects.filter(animal=animal_id)
-            print(len(medical_stories))
-            print(medical_stories.count())
-            #print(medical_stories[0])
             if medical_stories.count() == 0:
                 return Response({'response': 'No hay historias médicas para este animal'}, status=status.HTTP_404_NOT_FOUND)
             return generate_medical_history_pdf(medical_stories)

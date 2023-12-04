@@ -5,7 +5,6 @@ from knox.models import AuthToken
 from knox.settings import CONSTANTS
 from urllib.parse import parse_qs
 
-
 @database_sync_to_async
 def get_user(token):
     try:
@@ -22,8 +21,7 @@ class TokenAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
         query_string = scope.get("query_string", b"").decode()
         query_params = parse_qs(query_string)
-        token_key = query_params.get("auth", [""])[0]  # 'token' es el nombre del parámetro en el query string
+        token_key = query_params.get("auth", [""])[0] 
         if token_key:
             scope['user'] = await get_user(token_key)
-
         return await super().__call__(scope, receive, send)
